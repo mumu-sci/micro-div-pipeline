@@ -1,0 +1,28 @@
+# ⚠ 本包目前**未纳入版本控制**（目录下没有 .git）—— 这份 .gitignore 是为将来预留的。
+#   历史沿革见包外 ../_build-notes/micro-div-pipeline/ 的 BUILD_LOG / DECISIONS / VALIDATION。
+#   维护流程见 references/08-maintenance.md。
+
+# 计算缓存与产物（可重建：Rscript --vanilla R/90_run_all.R --force）
+cache/
+results/
+figures/
+logs/
+*.RData
+
+# 但保留目录占位
+!results/.gitkeep
+!figures/.gitkeep
+!logs/.gitkeep
+!cache/.gitkeep
+
+# 编辑器和系统
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+Thumbs.db
+
+# R 的散件（渲染 PDF / 交互式绘图会掉在当前目录）
+Rplots.pdf
+*.Rout

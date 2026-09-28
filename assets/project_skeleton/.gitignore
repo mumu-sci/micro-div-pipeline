@@ -1,0 +1,11 @@
+# 计算缓存与产物（可重建，不进版本库）
+cache/
+results/
+figures/
+logs/
+*.RData
+*.rds
+
+# 数据：按需决定是否进版本库
+# data/*.csv
+# data/*.nwk
