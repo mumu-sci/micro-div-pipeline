@@ -1,8 +1,9 @@
-# ⚠ 本包目前**未纳入版本控制**（目录下没有 .git）—— 这份 .gitignore 是为将来预留的。
-#   历史沿革见包外 ../_build-notes/micro-div-pipeline/ 的 BUILD_LOG / DECISIONS / VALIDATION。
-#   维护流程见 references/08-maintenance.md。
+# 本包已纳入 Git，远端为私有仓库 https://github.com/ypsen/micro-div-pipeline （分支 master）。
+# 提交范围 = 76 个文件（R/ · references/ · assets/ · config/ · data/ · run/ · scripts/ · SKILL.md）。
+# 维护流程见 references/08-maintenance.md；
+# 包外构建记录（回归基线 / 历史决策 / 已归档代码）见 ../_build-notes/micro-div-pipeline/ ，不进本仓库。
 
-# 计算缓存与产物（可重建：Rscript --vanilla R/90_run_all.R --force）
+# 计算缓存与产物（可重建：Rscript --vanilla R/90_run_all.R --force）—— 不入库
 cache/
 results/
 figures/

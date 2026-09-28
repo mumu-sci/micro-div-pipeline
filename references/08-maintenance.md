@@ -101,11 +101,28 @@ Rscript --vanilla assets/compare_figures.R <基线目录> figures <out.csv>
 
 ---
 
-## 7. 版本控制现状
+## 7. 版本控制
 
-**本包目前未纳入版本控制**（目录下没有 `.git`）。`.gitignore` 是**为将来预留**的，
-它把 `cache/ results/ figures/ logs/` 视为可重建产物 —— 这几类确实都能由
-`Rscript --vanilla R/90_run_all.R --force` 重建。
+本包已纳入 Git，远端是**私有仓库** `https://github.com/ypsen/micro-div-pipeline`（默认分支 `master`）。
 
-在补上版本控制之前，唯一的变更历史就是包外 `_build-notes/micro-div-pipeline/` 里的
-`BUILD_LOG.md` / `DECISIONS.md` / `VALIDATION.md`。**改动前请先在这三份里记一笔。**
+**提交范围**：`.gitignore` 排除了 `cache/ results/ figures/ logs/` —— 这几类都能由
+`Rscript --vanilla R/90_run_all.R --force` 重建，属于可重建产物，不入库。
+目前入库的是 **76 个文件 / 约 1.34 MB**（`R/` 39 · `references/` 9 · `assets/` 11 ·
+`config/` 4 · `data/` 7 · `run/` 2 · `scripts/` 2 · `SKILL.md` · `.gitignore`）。
+
+**仓库根 = 包根**，且**故意不放 `README.md`**：本机校验器
+`skill-creator/scripts/validate_skill.py:80-81` 把 skill 根目录下的 `README.md` 判为 **ERROR**。
+面向人的文档因此放在 `references/05-quickstart.md`（见该文件头部说明）。
+
+**提交流程**：
+```powershell
+git add -A
+git commit -m "..."
+git push
+```
+提交前建议跑一遍 `--check` 与 `scripts/audit_figures.R`，并在包外
+`_build-notes/micro-div-pipeline/` 的 `BUILD_LOG.md` / `DECISIONS.md` / `VALIDATION.md`
+里记一笔 —— 那三份是仓库里**没有**的沿革记录。
+
+> ⚠ `_build-notes/`（回归基线、历史决策、已归档代码、论文目录只读快照）**不在本仓库内**。
+> 要完整跑一遍回归，需要 `analysis-packages/` 这一层，而不是只有 `micro-div-pipeline/`。
