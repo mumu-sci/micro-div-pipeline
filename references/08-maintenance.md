@@ -103,7 +103,7 @@ Rscript --vanilla assets/compare_figures.R <基线目录> figures <out.csv>
 
 ## 7. 版本控制
 
-本包已纳入 Git，远端是**私有仓库** `https://github.com/ypsen/micro-div-pipeline`（默认分支 `master`）。
+本包已纳入 Git，远端是**私有仓库** `https://github.com/mumu-sci/micro-div-pipeline`（默认分支 `master`）。
 
 **提交范围**：`.gitignore` 排除了 `cache/ results/ figures/ logs/` —— 这几类都能由
 `Rscript --vanilla R/90_run_all.R --force` 重建，属于可重建产物，不入库。

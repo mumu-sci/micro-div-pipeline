@@ -1,4 +1,4 @@
-# 本包已纳入 Git，远端为私有仓库 https://github.com/ypsen/micro-div-pipeline （分支 master）。
+# 本包已纳入 Git，远端为私有仓库 https://github.com/mumu-sci/micro-div-pipeline （分支 master）。
 # 提交范围 = 76 个文件（R/ · references/ · assets/ · config/ · data/ · run/ · scripts/ · SKILL.md）。
 # 维护流程见 references/08-maintenance.md；
 # 包外构建记录（回归基线 / 历史决策 / 已归档代码）见 ../_build-notes/micro-div-pipeline/ ，不进本仓库。
