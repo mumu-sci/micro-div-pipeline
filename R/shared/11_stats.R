@@ -76,7 +76,7 @@ md_group_test <- function(CFG, df, value, group, test = "kruskal_dunn",
   } else if (test == "kruskal_dunn") {
     kt <- stats::kruskal.test(y ~ g, data = d)
     n  <- nrow(d); k <- length(lv)
-    eps2 <- unname(kt$statistic) / ((n^2 - 1) / (n + 1))   # 与 nifH 论文口径一致
+    eps2 <- unname(kt$statistic) / ((n^2 - 1) / (n + 1))   # 与 原始研究口径一致
     res$test <- data.frame(test = "Kruskal-Wallis", statistic = unname(kt$statistic),
                            df = k - 1, p = kt$p.value, method = "kruskal.test",
                            effect = eps2, stringsAsFactors = FALSE)
@@ -275,7 +275,7 @@ md_boot_rho <- function(CFG, df, x, y, cluster = NULL, B = 1000, label = "") {
 # ---------------------------------------------------------------------------
 # 共线诊断
 # ---------------------------------------------------------------------------
-#' VIF = 1/(1-R^2)（手写版，与 nifH 论文口径一致）
+#' VIF = 1/(1-R^2)（手写版，与 原始研究口径一致）
 md_vif <- function(df, vars) {
   vars <- vars[vars %in% names(df)]
   if (length(vars) < 2) return(data.frame(variable = vars, vif = NA_real_))
@@ -334,13 +334,13 @@ md_subsample_avg <- function(m, depth, reps = 20L, seed = 123L) {
 }
 
 # =============================================================================
-# 以下为 2026 毕业论文补充轮新增（模块 10 指示种 / 12 生态位 / 40 RF /
+# 以下为 2026 补充轮新增（模块 10 指示种 / 12 生态位 / 40 RF /
 # 44 约束排序 / 45 响应曲线 / 70 SRH / 71 Procrustes / 83 差异类群）
 #
 # 纪律：
 #   · 全部纯计算，不绘图、不写文件；
 #   · 所有随机过程先 md_seed(CFG, md_offset(...))，模块里不出现字面量种子；
-#   · 统计口径逐项照抄毕业论文原脚本（源文件与行号写在每个函数的注释里）；
+#   · 统计口径逐项照抄参考实现（源文件与行号写在每个函数的注释里）；
 #   · 每个函数都对"输入不足"给出 NA / NULL 而不是报错，由模块决定 SKIP 还是降级。
 # =============================================================================
 
@@ -351,9 +351,9 @@ md_offset <- function(CFG, name, default) {
 }
 
 # ---------------------------------------------------------------------------
-# 生态位宽度与稀有性（12_niche_breadth；源：1_community_composition.R §7）
+# 生态位宽度与稀有性（12_niche_breadth；参考实现）
 # ---------------------------------------------------------------------------
-#' Levins' 生态位宽度 B（源：`1_community_composition.R:815-817`）
+#' Levins' 生态位宽度 B
 #'   B = 1 / sum(p^2)，p 为该 ASV 在各样本中的相对丰度构成
 #'   `sum(p > 0) < 2` 时返回 NA（原脚本口径：只在 1 个样本出现无法定义宽度）
 md_levins_b <- function(x) {
@@ -374,7 +374,7 @@ md_shannon_breadth <- function(x) {
 }
 
 #' ASV × 样本 相对丰度矩阵 -> ASV 级生态位/稀有性表
-#' 源：`1_community_composition.R:773-836`（`classify_2x2` 的 4 象限 + Levins' B）
+#' 参考实现（`classify_2x2` 的 4 象限 + Levins' B）
 #' @param m  ASV × 样本 **原始 reads**（未抽平；原脚本用 `ps_rare`）
 #' @param a_thr 平均相对丰度阈值（%，原脚本 0.1）
 #' @param p_thr 出现率阈值（%，原脚本 10）
@@ -402,7 +402,7 @@ md_niche_table <- function(m, a_thr = 0.1, p_thr = 10, index = "levins") {
   out
 }
 
-#' 样本级"生态策略组成"（源：`1_community_composition.R:513-568`）
+#' 样本级"生态策略组成"
 #' 每个样本内四类细胞的**相对丰度占比**（%）
 md_sample_strategy <- function(m, niche_df, a_thr = 0.1, p_thr = 10) {
   m <- as.matrix(m)
@@ -422,9 +422,9 @@ md_sample_strategy <- function(m, niche_df, a_thr = 0.1, p_thr = 10) {
 }
 
 # ---------------------------------------------------------------------------
-# 差异类群（83_taxon_diff；源：S4_supplementary_taxa.R §3 / 原 9_differential_analysis.R）
+# 差异类群（83_taxon_diff；参考实现 / 原脚本）
 # ---------------------------------------------------------------------------
-#' 中心对数比变换（源：`S4_supplementary_taxa.R:781-791`）
+#' 中心对数比变换
 #' 伪计数缺省 = 最小正值的 1/2（与原脚本一致）
 md_clr <- function(mat, pseudocount = NULL) {
   mat <- as.matrix(mat)
@@ -439,7 +439,7 @@ md_clr <- function(mat, pseudocount = NULL) {
   lg - rowMeans(lg)
 }
 
-#' Cliff's delta（源：`S4_supplementary_taxa.R:809-824`）
+#' Cliff's delta
 #' 返回"绝对效应量最大"的那一对的 delta（原脚本口径，不是加权平均）
 md_cliff_delta <- function(x, group) {
   x <- as.numeric(x); group <- as.character(group)
@@ -461,7 +461,7 @@ md_cliff_delta <- function(x, group) {
 }
 
 #' 类群级差异分析：CLR + Kruskal-Wallis + BH + Cliff's delta + 富集组
-#' 源：`S4_supplementary_taxa.R:828-872`（`run_diff_analysis`）
+#' 参考实现（`run_diff_analysis`）
 #' （函数名带 `_kw` 后缀，避免与模块 83 的入口 `md_taxon_diff()` 撞名）
 #' @param clr_mat 类群 × 样本 的 CLR 矩阵
 #' @param rel_mat 类群 × 样本 的相对丰度（%）矩阵，同维度
@@ -511,7 +511,7 @@ md_diff_taxa_kw <- function(clr_mat, rel_mat, meta_df, group_var,
   res[order(res$KW_padj), , drop = FALSE]
 }
 
-#' 差异类群的 Dunn 事后检验（源：`S4_supplementary_taxa.R:874-889`）
+#' 差异类群的 Dunn 事后检验
 md_taxon_dunn <- function(clr_mat, meta_df, group_var, taxa,
                           sample_col = "sample_id", adjust = "BH") {
   if (!length(taxa) || !requireNamespace("rstatix", quietly = TRUE)) return(data.frame())
@@ -534,7 +534,7 @@ md_taxon_dunn <- function(clr_mat, meta_df, group_var, taxa,
 
 # ---------------------------------------------------------------------------
 # 指示种 IndVal（10_composition 的 indicator 面板 / 81_taxon_group）
-# 源：S4_supplementary_taxa.R:117-171（indicspecies::multipatt, IndVal.g, 999 置换）
+# 参考实现（indicspecies::multipatt, IndVal.g, 999 置换）
 # ---------------------------------------------------------------------------
 #' @param comm  ASV × 样本 的**相对丰度**矩阵（行 = ASV，列 = 样本）
 #' @param group 长度 = ncol(comm) 的分组向量
@@ -577,7 +577,7 @@ md_indval <- function(CFG, comm, group, func = "IndVal.g", nperm = 999,
 
 # ---------------------------------------------------------------------------
 # Scheirer-Ray-Hare 双因子非参数检验（70_response_pattern 的备选口径）
-# 源：8_ARA_function.R:200-236 —— rcompanion 优先，缺包退回 ART + 双因素 ANOVA
+# 参考实现 —— rcompanion 优先，缺包退回 ART + 双因素 ANOVA
 # ---------------------------------------------------------------------------
 #' @param df data.frame
 #' @param y  因变量列名（连续）
@@ -616,7 +616,7 @@ md_srh <- function(CFG, df, y, f1, f2) {
 
 # ---------------------------------------------------------------------------
 # Procrustes（71_response_linkage 的 "procrustes" 口径）
-# 源：8_ARA_function.R:1173-1229
+# 参考实现
 # ---------------------------------------------------------------------------
 #' @param X,Y 两个样本 × 维度的排序得分矩阵（行名 = sample_id，顺序需一致或可对齐）
 #' @param permutations PROTEST 置换次数
@@ -645,10 +645,10 @@ md_procrustes_res <- function(CFG, X, Y, permutations = 999, seed_offset = 8120L
 
 # ---------------------------------------------------------------------------
 # 随机森林重要性（40_env_summary 的 rf 面板 / 71 的 "rf" 口径）
-# 源：3_environmental_drivers.R:1199-1258（ranger，permutation importance，缩放到 max=1）
-#     8_ARA_function.R:1130+（randomForest 口径）
+# 参考实现（ranger，permutation importance，缩放到 max=1）
+#     原脚本+（randomForest 口径）
 # ---------------------------------------------------------------------------
-#' @param engine "ranger"（推荐，与毕业论文 Fig3b-B 一致）| "randomForest" | "cforest"
+#' @param engine "ranger"（推荐，与原图 一致）| "randomForest" | "cforest"
 #' 本函数**永不抛错**：任何异常都降级为 `md_warn()` + 返回 NULL，由调用模块决定跳过该面板。
 md_rf_fit <- function(CFG, df, y, xs, engine = "ranger", num_trees = 2000L,
                       importance = "permutation", seed_offset = 8130L) {
@@ -718,7 +718,7 @@ md_rf_fit_impl <- function(CFG, df, y, xs, engine = "ranger", num_trees = 2000L,
   imp$Importance_scaled <- imp$Importance / max(imp$Importance, na.rm = TRUE)
   imp <- imp[order(-imp$Importance), , drop = FALSE]
   rownames(imp) <- NULL
-  # 部分依赖（可选，只有装了 pdp 才算；原论文 Fig3b 没有 PDP，属本包可选面板）
+  # 部分依赖（可选，只有装了 pdp 才算；原论文 原图 没有 PDP，属本包可选面板）
   pdp_df <- NULL
   if (isTRUE(CFG$env$rf$pdp %||% FALSE) && !is.null(fit) &&
       used %in% c("ranger", "randomForest") && md_need(CFG, "rf", "rf/pdp")) {
@@ -744,9 +744,9 @@ md_rf_fit_impl <- function(CFG, df, y, xs, engine = "ranger", num_trees = 2000L,
 }
 
 # ---------------------------------------------------------------------------
-# GAM / GAMM 响应曲线（45_response_curves；源：3_environmental_drivers.R:1261-1345）
+# GAM / GAMM 响应曲线（45_response_curves；参考实现）
 # ---------------------------------------------------------------------------
-#' @param engine  "gam"（推荐，论文 Fig3b-C 口径）| "gamm" | "lm"
+#' @param engine  "gam"（推荐，论文 原图 口径）| "gamm" | "lm"
 #' @param k       平滑基维数（原脚本 k = 4）
 #' @param random  随机效应项字符串，例如 "(1|Site)"；给出则走 gamm
 #' @param grid_n  预测网格点数（原脚本 100）
@@ -803,7 +803,7 @@ md_gam_curve <- function(CFG, df, y, x, engine = "gam", k = 4L, random = NULL,
 
 # ---------------------------------------------------------------------------
 # 约束排序 db-RDA / RDA / CCA / capscale（44_constrained_ord）
-# 源：3_environmental_drivers.R:855-928
+# 参考实现
 # ---------------------------------------------------------------------------
 #' @param Y  样本 × 变量 的响应矩阵（`response = "community"` 时），
 #'           或已是 `dist` 对象（`response = "distance"` 时用 `Y` 作距离）

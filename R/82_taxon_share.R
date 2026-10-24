@@ -1,7 +1,7 @@
 # =============================================================================
 # R/82_taxon_share.R ---- 模块 82：类群共享（UpSet）
 # -----------------------------------------------------------------------------
-# 源：毕业论文 S4_supplementary_taxa.R 第 296-690 行（原 8_asv_sharing.R）
+# 参考实现 第 296-690 行（原脚本）
 #     关键原文行：360-428（get_group_asvs / build_shared_df 的共享-特有统计）、
 #                 489-560（make_upset_hm：ComplexHeatmap::make_comb_mat + UpSet）
 #
@@ -16,7 +16,7 @@
 # 依赖共享库：md_core / md_core_asv / md_rel / md_pal / md_compose / md_venn2 /
 #             md_venn3 / md_save_figure / md_write_xlsx / md_empty_plot / md_result
 #
-# 说明：本模块**只出 UpSet 一个面板**（原脚本 FigS3b 就是一张 UpSet）。
+# 说明：本模块**只出 UpSet 一个面板**（原脚本 附图b 就是一张 UpSet）。
 #   2026-09-26（第六轮）按用户裁定删掉原 B 面板（Venn / 共享条形）；
 #   show_venn 配置键保留但不再生效。单面板不进 patchwork，因此也不需要
 #   "定宽高比矢量包装" 那一层 —— 图是**全矢量**的，字号走 pt$tick / pt$legend。
@@ -216,7 +216,7 @@ md_taxon_share <- function(CFG) {
   bar_col <- st$bar_color %||% "grey35"
 
   # ---------------------------------------------------------------------------
-  # 出图段：**只有 UpSet 一个面板**（原脚本 FigS3b 就是一张 UpSet）
+  # 出图段：**只有 UpSet 一个面板**（原脚本 附图b 就是一张 UpSet）
   #   2026-09-26（第六轮）：按用户裁定删掉 B 面板（Venn / 共享条形）。
   #   单面板不再进 patchwork，所以也不需要"定宽高比矢量包装"那一层 ——
   #   直接把 draw() 出来的 grob 用 ggplotify::as.ggplot() 包一次即可，全矢量。
@@ -271,7 +271,7 @@ md_taxon_share <- function(CFG) {
   # 的字号），也不受拼图缩放影响。
   md_save_figure(CFG, pA, "82_taxon_share", width = 183, height = 110)
   md_maybe_single(CFG, pA, "82_taxon_share_A")
-  add_note("本模块只出 UpSet 一个面板（原脚本 FigS3b 就是一张 UpSet）；",
+  add_note("本模块只出 UpSet 一个面板（原脚本 附图b 就是一张 UpSet）；",
            "Venn 面板已按用户裁定删除（show_venn 键保留但不再生效）。")
   # ---------------------------------------------------------------------------
   # 写表段
@@ -290,7 +290,7 @@ md_taxon_share <- function(CFG) {
               paste0("taxa present in >= ", min_prev, " samples of a level"),
               "single UpSet panel (ComplexHeatmap::UpSet, drawn grob wrapped by ggplotify::as.ggplot)",
               paste0("The original script drew three hard-wired UpSets (Zone, Vegetation, ",
-                     "Zone x Vegetation at 508 x 406 mm). Here the grouping factor is ",
+                     "设计因子交互 at 508 x 406 mm). Here the grouping factor is ",
                      "configurable (CFG$taxon_share$factor) and one UpSet at 183 x 110 mm ",
                      "is produced. The former Venn / shared-unique bar panel was removed ",
                      "on 2026-09-26 by user decision.")),

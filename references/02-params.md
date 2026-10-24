@@ -51,7 +51,7 @@
 | `filter$min_sample_reads` | 1000 | 依赖数据量级 | 取数据中最小可信深度 | 读长过低的样本抽平后会丢大量 ASV |
 | `filter$taxon_subset` | NULL | `list(rank=, keep=, drop=)` | **16S 务必 drop 叶绿体与线粒体** | 见下方示例 |
 
-**`taxon_subset` 的通用用法**（这就是把 nifH 的"Cluster IV 过滤"通用化后的机制）：
+**`taxon_subset` 的通用用法**（这就是把 原实现"Cluster IV 过滤"通用化后的机制）：
 ```r
 # 16S：剔除叶绿体与线粒体
 filter$taxon_subset <- list(rank = "Order", keep = NULL, drop = c("Chloroplast", "Mitochondria"))
@@ -237,7 +237,7 @@ filter$taxon_subset <- list(rank = "Kingdom", keep = "Fungi", drop = NULL)
 
 | 键 | 默认 | 推荐 | 理由 |
 |---|---|---|---|
-| `figure$skip_modules` | `c("01","05","13","15","22")` | **保持默认**（除非你论文确实要这几张） | 这 5 个模块在 nifH 论文里**没有对应图**（诊断图 / 只出表的检验）。默认只出结果表；想让某个模块出图就把它从这个向量里删掉。完整对照见 `references/06-figure-map.md` |
+| `figure$skip_modules` | `c("01","05","13","15","22")` | **保持默认**（除非你论文确实要这几张） | 这 5 个模块在 原始研究里**没有对应图**（诊断图 / 只出表的检验）。默认只出结果表；想让某个模块出图就把它从这个向量里删掉。完整对照见 `references/06-figure-map.md` |
 
 ### R3 配色（内置 nifH 那套，逐字照搬）
 
@@ -248,18 +248,18 @@ filter$taxon_subset <- list(rank = "Kingdom", keep = "Fungi", drop = NULL)
 | `figure$palette$<其他>` | NULL | 要覆盖才填 | 键名 = 因子列名；水平名要对得上，缺色会 `md_warn` 并补兜底色 |
 | 组装过程 / 核心稀有 | 内置 `assembly` / `quadrant` | 留 NULL | 来自 nifH `cols_assembly` / `cols_2x2` |
 
-### R4 箱线图样式（默认完全复刻 nifH 的 `plot_dual_factor_panel`）
+### R4 箱线图样式（默认完全复刻 原实现 `plot_dual_factor_panel`）
 
 | 键 | 默认 | 可选项 | 推荐 | 理由 |
 |---|---|---|---|---|
 | `plot$box$style` | `nifh` | `nifh` / `simple` | `nifh` | 与论文一致 |
 | `plot$box$letters` | `TRUE` | TRUE / FALSE | `TRUE` | 是否画 CLD 显著性字母（**默认与原代码构建方法一致**）。设 `FALSE` 只影响出图，字母本身仍写在 `Descriptive` 表里 |
 | `plot$box$color_by` | `auto` | `auto` / `f1` / `f2` / `none` | `auto` | auto = 双因子用**第二因子**、单因子用第一因子（nifH 口径）；**非双因子设计或想统一上色时改成 `none`** |
-| `plot$box$fill` | `NA` | `NA` 或颜色 | `NA` | 空心箱体 + 边框上色是 nifH 的做法 |
+| `plot$box$fill` | `NA` | `NA` 或颜色 | `NA` | 空心箱体 + 边框上色是 原实现做法 |
 | `plot$box$letters_at` | 1.08 | 1.0–1.2 | 1.08 | 字母 y = 每组 max(y) × 该系数 |
 | `plot$box$show_n` | `FALSE` | TRUE/FALSE | **FALSE** | nifH 不标样本量；标了会和字母抢位置 |
 | `plot$box$kw_annot` | TRUE | TRUE/FALSE | TRUE | 右上角 `Zone: p = 0.033 *; Vegetation: p = 0.486 ns` |
-| `plot$box$y_from_zero` | TRUE | TRUE/FALSE | TRUE | nifH 的 y 轴从 0 起 |
+| `plot$box$y_from_zero` | TRUE | TRUE/FALSE | TRUE | 原实现 y 轴从 0 起 |
 | `plot$box$y_expand` | 1.35 | 1.1–1.6 | 1.35 | y 上限 = max × 该系数 |
 | `plot$box$inward_ticks` | TRUE | TRUE/FALSE | TRUE | nifH 用 `unit(-0.12,"cm")` 朝内刻度 |
 | `plot$box$inter_sep` | `"_"` | 任意分隔符 | `"_"` | **必须与生成 CLD 字母时用的分隔符一致**，否则字母被丢弃（pitfalls C7） |
@@ -281,7 +281,7 @@ filter$taxon_subset <- list(rank = "Kingdom", keep = "Fungi", drop = NULL)
 
 ---
 
-## T. 2026 毕业论文补充轮（模块 12 / 44 / 45 / 80 / 81 / 82 / 83）
+## T. 2026 补充轮（模块 12 / 44 / 45 / 80 / 81 / 82 / 83）
 
 > 这一组全部是**可选**的：`enabled = FALSE` 时该模块直接 SKIP，不影响其余模块。
 > 往已有模块里加的四条增量（`composition$indicator` / `env$rf` /
@@ -298,7 +298,7 @@ filter$taxon_subset <- list(rank = "Kingdom", keep = "Fungi", drop = NULL)
 | `input` | `raw` | `raw` | 生态位宽度对测序深度敏感，抽平会削平宽度（与原脚本一致） |
 | `thr_abund` | 0.1 | 0.1 | 四象限的平均相对丰度阈值（%），原 `classify_2x2` 口径 |
 | `thr_prev` | 10 | 10 | 四象限的出现率阈值（%），原脚本口径 |
-| `groups` | NULL | 保持 NULL | NULL = **前两个设计因子的交互组**（毕业论文 Fig1c 原图就是 Zone×Vegetation，顺序为「第一因子为主序」）；给字符串则强制单因子 |
+| `groups` | NULL | 保持 NULL | NULL = **前两个设计因子的交互组**（原实现）；给字符串则强制单因子 |
 | `sensitivity_occ` / `sensitivity_abund` | 原脚本 5×3 网格 | 保持 | 阈值敏感性扫描（原 SCI-8），验"核心/稀有划分是不是阈值造出来的" |
 
 ### T2 `constrained_ord`（模块 44 约束排序）
@@ -332,7 +332,7 @@ filter$taxon_subset <- list(rank = "Kingdom", keep = "Fungi", drop = NULL)
 | `x_from` | `"rf_top"` | `"rf_top"` | 先用随机森林给 `env$vars` 排序、取前 `max_panels` 个（对齐原脚本 `gam_preds <- names(sort(rf_A_pcoa1$variable.importance))[1:3]`）。读不到 40/71 的 RF 结果时，模块 45 **自己跑一次** `md_rf_fit()`；再不行才回退 `x` |
 | `rf` | `list(engine="ranger", num_trees=2000)` | 保持 | `x_from="rf_top"` 且读不到 40/71 的 RF 结果时，模块 45 自己跑一次用的参数 |
 | （已删除）`style$show_edf_bar` | —— | —— | 原实现的 **B 面板（EDF / -log10(P) 条形）是自造的**，原代码没有这张图，2026-09-26 已删除；本模块现在只有 GAM 曲线一组 |
-| `p_max` | 0.1 | 0.1 | 只画 P 小于该值的平滑项（原脚本 `3_environmental_drivers.R:1320` 口径）；**一个都没通过时按与模块 83 相同的回退口径只显示 P 最小的一个**，并在面板内标注 `p > 0.10 (not significant)` |
+| `p_max` | 0.1 | 0.1 | 只画 P 小于该值的平滑项（原脚本 口径）；**一个都没通过时按与模块 83 相同的回退口径只显示 P 最小的一个**，并在面板内标注 `p > 0.10 (not significant)` |
 
 ### T4 `network`（模块 80 共现网络 —— **会出 4 张图**）
 
@@ -356,7 +356,7 @@ filter$taxon_subset <- list(rank = "Kingdom", keep = "Fungi", drop = NULL)
 | `sub_network_by` | `abundance_rank` | `abundance_rank` | 亚网络按丰度×出现率四象限分组（原脚本口径） |
 | `turnover_by` | NULL | 第二个设计因子 | Sankey 节点周转按它的相邻水平对比较 |
 | `style$layout` / `style$layout_group` | `graphopt` / `fr` | 保持 | **布局在出图段算**，属于样式键（不进缓存键） |
-| `style$wide_layout` | FALSE | FALSE | 节点属性图（80d）：FALSE = 183 mm 三格纵向（与全包其余图同观感）；TRUE = 复刻原文 Fig5a 的 533.4×177.8 mm 单排 |
+| `style$wide_layout` | FALSE | FALSE | 节点属性图（80d）：FALSE = 183 mm 三格纵向（与全包其余图同观感）；TRUE = 复刻原文 原图 533.4×177.8 mm 单排 |
 | `style$*` | `MD_NET` | 一般不用改 | 节点/边尺寸、透明度、字号、top-N 都走 `style` |
 
 ### T5 `taxon_group`（模块 81 通用类群分组）

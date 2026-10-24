@@ -4,7 +4,7 @@
 # 口径（**必须写进表里，口径错了整个 P 都错**）：
 #   · Mantel / MRM 的置换发生在【对象级】：置换的是 n 个样本（口径 pair）或
 #     n 个站点（口径 site）的标签，**不是**把每一对当独立观测。
-#     nifH 的实测诊断：对级置换会把 P 系统压小约 18 倍。
+#     原实现实测诊断：对级置换会把 P 系统压小约 18 倍。
 #   · 双口径：
 #       pair ---- 对象 = 样本（n = 样本数），观测 = 全部样本对；
 #       site ---- 对象 = 站点（n = 站点数），观测 = 全部站点对；
@@ -438,7 +438,7 @@ md_mantel_mrm <- function(CFG) {
   # ---------------------------------------------------------------------------
   # 4. 图：成对散点（hexbin）+ 效应量森林图
   #    面板 A = 论文 Fig.S12B「区域 |delta 响应| vs 群落距离」，
-  #             画法逐项照抄 nifH 16_Supp_function_decoupling.R §B/§C 的 mk_hex()：
+  #             画法逐项照抄 nifH 原脚本 §B/§C 的 mk_hex：
   #      geom_hex(bins = 55) + 共用色标（low "grey90" / high "#2B6AA0" / trans "log10"
   #      / name "pairs" / limits = c(1, CNT_MAX) / breaks c(1,10,100) / oob squish）
   #      + geom_smooth(method = "lm", se = FALSE, colour "#B2182B", linewidth REG_LINE_LW)
@@ -447,7 +447,7 @@ md_mantel_mrm <- function(CFG) {
   #      + 副标题给量纲/口径（S_ANN_COMP 字号、grey35、hjust = 0）。
   #      hexbin 缺失时 md_warn 并降级为普通散点（不报错、不静默）。
   #    面板 B = 效应量森林图，走基元 md_forest()
-  #      （15_Supp_assembly_ARA.R 的标准化 beta 森林图版式；坐标轴方向由基元给出）。
+  #      （原实现标准化 beta 森林图版式；坐标轴方向由基元给出）。
   # ---------------------------------------------------------------------------
   prim_lv <- lv_ok[1]
   prim_x  <- names(L[[prim_lv]]$dist)[1]
@@ -455,7 +455,7 @@ md_mantel_mrm <- function(CFG) {
   cx_prim <- make.names(prim_x)
   pt <- md_pt(CFG)
 
-  # P 文案照抄 nifH 11_shared.R::fmt_p()（ASCII；不用 md_fmt_p() 的 "—"）
+  # P 文案照抄 nifH 原脚本（ASCII；不用 md_fmt_p 的 "—"）
   fmt_p_fig <- function(p) ifelse(is.na(p) | length(p) == 0, "NA",
                            ifelse(p < 0.001, "P < 0.001", sprintf("P = %.3f", p)))
   # 取「某个 x 在该口径下」的那一行
@@ -522,8 +522,8 @@ md_mantel_mrm <- function(CFG) {
                    plot.subtitle = ggplot2::element_text(size = MD_PT_COMP$ann,
                                                          colour = "grey35", hjust = 0))
 
-  # B（效应量森林图）**原脚本已明确移除** —— 16_Supp_function_decoupling.R:49 写着
-  # 效应量面板"→ 从 FigS12 移除，数字完整保留在 TableS15 的 B_effect_sizes 工作表"。
+  # B（效应量森林图）**原脚本已明确移除** —— 原脚本 写着
+  # 效应量面板"→ 从 附图 移除，数字完整保留在 TableS15 的 B_effect_sizes 工作表"。
   # 故这里只出 A（hexbin |Δ响应| vs 群落距离 + MRM/Mantel/饱和度标注）；
   # 效应量数字仍完整写在 Effect_sizes 表里。
 

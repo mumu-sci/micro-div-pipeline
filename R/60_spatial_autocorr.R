@@ -421,7 +421,7 @@ md_spatial_autocorr <- function(CFG) {
   # ---------------------------------------------------------------------------
   pt <- md_pt(CFG)
 
-  # ---- 画法对齐 18_Supp_spatial_autocorr.R §FigS13 ----
+  # ---- 画法对齐 原脚本 §附图 ----
   # A：单一色的 geom_col（原脚本用 cols_zone[["Xisha"]]），**没有** fill 图例；
   #    x 轴按 Moran's I 排序（原脚本 aes(x = reorder(Variable, Moran_I))）
   # B：correlogram，等距【类别】轴；颜色 = 内置 zone 色板按顺序取（原脚本把
@@ -465,7 +465,7 @@ md_spatial_autocorr <- function(CFG) {
     pB <- pB + ggplot2::labs(tag = "B")
   }
 
-  # 版式对齐 FIGURE_PANELS$FigS13：183 x 85 mm，1 行 2 列等宽，
+  # 版式对齐 FIGURE_PANELS$附图：183 x 85 mm，1 行 2 列等宽，
   # legend = "none"（B 的图例在面板右侧，故组合层不覆盖 legend.position）
   fig <- md_compose(CFG, list(A = pA, B = pB), design = "AB",
                     guides = "keep", legend = NULL)

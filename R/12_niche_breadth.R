@@ -1,12 +1,12 @@
 # =============================================================================
-# R/12_niche_breadth.R ---- 模块 12：生态位宽度与生态策略组成（原图 Fig1c）
+# R/12_niche_breadth.R ---- 模块 12：生态位宽度与生态策略组成
 # -----------------------------------------------------------------------------
-# 源：毕业论文 1_community_composition.R 第 415-900 行
-#       （原 6_niche_rarity.R 的样本级四象限组成 + §7 稀有物种清单 / Levins' B）
+# 参考实现 第 415-900 行
+#       （原实现样本级四象限组成 + §7 稀有物种清单 / Levins' B）
 #     关键原文行：679-708（fig07 双因素堆叠柱）、850-867（p_07sa 四象限散点）、
 #                 869-879（p_07sb Levins B + gam）、887-891（两行拼图 200x150 mm）
 #
-# 做什么（**版式完全对齐原图 Fig1c_niche_rarity**）
+# 做什么（**版式完全对齐原图**）
 #   A  样本生态策略组成堆叠柱，x = **前两个设计因子的交互组**（原 fig07）
 #   B  丰度 x 出现率四象限散点（原 p_07sa；2026-09-26 从模块 10_composition 移入）
 #   C  Levins B vs 出现率 + **gam 平滑 + 95% CI**（原 p_07sb）
@@ -71,8 +71,8 @@ md_niche_breadth <- function(CFG) {
   if (!is.null(meta)) meta <- meta[match(colnames(m), meta[[smp]]), , drop = FALSE]
 
   # ---- 分组变量（样本级堆叠柱的横轴）----
-  #   默认 = **前两个设计因子的交互组**（与原图 Fig1c 的 x 轴一致：
-  #   1_community_composition.R:691-698 的 interaction_order 就是 Zone×Vegetation，
+  #   默认 = **前两个设计因子的交互组**（与原图 x 轴一致：
+  #   原实现 interaction_order 就是 设计因子交互，
   #   顺序为「第一因子为主序、第二因子为次序」）；
   #   CFG$niche$groups 给字符串时强制单因子。
   facs <- CFG$design$factors %||% character(0)
@@ -112,7 +112,7 @@ md_niche_breadth <- function(CFG) {
 
     niche_df <- md_niche_table(m, thr_a, thr_p, index = idx)
 
-    # 原文 classify_2x2() 的 Cell 顺序（00c_setup_and_data_preparation.R:1103-1112）
+    # 原文 classify_2x2 的 Cell 顺序（原脚本）
     cell_levels <- c("Core", "Permanently_rare", "Conditionally_rare", "Transient_rare")
     niche_df$Cell <- factor(niche_df$Cell, levels = cell_levels)
 
@@ -226,7 +226,7 @@ md_niche_breadth <- function(CFG) {
   # ---------------------------------------------------------------------------
   # 出图段（每次运行都执行；样式不进缓存键）
   #
-  # 版式 = 毕业论文 Fig1c_niche_rarity（1_community_composition.R:679-891）：
+  # 版式 = 原图
   #   上排 A  样本生态策略组成堆叠柱（x = 前两个设计因子的交互组）  <- fig07
   #   下排 B  丰度 x 出现率四象限散点                               <- p_07sa（原在 10 号）
   #   下排 C  Levins B vs 出现率 + gam 平滑 + 95% CI                 <- p_07sb
@@ -259,7 +259,7 @@ md_niche_breadth <- function(CFG) {
                      legend.box = "vertical")
   }
 
-  # ---- B. 丰度 x 出现率四象限散点（原 p_07sa，逐项照抄 1_community_composition.R:850-867）----
+  # ---- B. 丰度 x 出现率四象限散点（原 p_07sa，逐项沿用同一套样式）----
   #   注意：原脚本这一格**没有**任何拟合曲线；阈值线固定 0.1% / 10%（不读 CFG 阈值 ——
   #   原脚本就是写死的 0.1 / 10，与四象限分类的默认阈值一致）。
   quad_ok <- niche_df[is.finite(niche_df$Mean_Abund) & niche_df$Mean_Abund > 0, , drop = FALSE]
@@ -293,7 +293,7 @@ md_niche_breadth <- function(CFG) {
       ggplot2::theme(legend.position = "none")
   }
 
-  # ---- C. Levins B vs 出现率 + gam 平滑 + 95% CI（原 p_07sb，逐项照抄 1_community_composition.R:869-879）----
+  # ---- C. Levins B vs 出现率 + gam 平滑 + 95% CI（原 p_07sb，逐项沿用同一套样式）----
   #   ⚠ 原式 `s(x, bs = "cs")` 用的是 mgcv 默认 k = 10。单例化严重的数据里出现率只有
   #     少数几个离散取值时会报 "x has insufficient unique values to support 10 knots"。
   #     这里把 k 自适应到 `min(10, 唯一值个数 - 1)`；`CFG$niche$style$gam$k` 可显式覆盖。
@@ -383,8 +383,8 @@ md_niche_breadth <- function(CFG) {
       paste0("A = sample ecological-strategy composition stacked bars, x = interaction group (",
              grp_var %||% "All samples", "); ",
              "B = abundance x occurrence 4-quadrant scatter (moved here from module 10, ",
-             "matches Fig1c p_07sa); ",
-             "C = Levins B vs occurrence with GAM smooth + 95% CI (matches Fig1c p_07sb)"),
+             "matches 原图 p_07sa); ",
+             "C = Levins B vs occurrence with GAM smooth + 95% CI (matches 原图 p_07sb)"),
       "mean per-sample percentage of each Cell within each group (stack sums to ~100%)",
       grp_var %||% "All samples",
       paste0("per-sample relative abundance (%) of the ASVs assigned to each Cell; ",

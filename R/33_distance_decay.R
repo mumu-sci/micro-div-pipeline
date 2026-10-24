@@ -1,12 +1,12 @@
 # =============================================================================
 # R/33_distance_decay.R —— 距离衰减关系（Distance-Decay Relationship, DDR）
 # -----------------------------------------------------------------------------
-# 口径来源（nifH 论文 09_Supp_assembly.R §6，只读参考，不修改）：
+# 口径来源（原始研究 原脚本，只读参考，不修改）：
 #   · 地理距离   = Haversine（km）—— 本包统一走 md_geo_dist()
 #   · 群落相似度 = 1 - Bray-Curtis（来自 md_dist_get(CFG, "bray")，即模块 13）
 #   · 拟合模型   = lm(log(Similarity) ~ log(Dist_km))，报斜率 + P + R²
 #   · 画图       = 距离衰减散点 + 拟合线，log-log 双轴
-# 本包相对 nifH 的扩展：
+# 本包相对 原实现扩展：
 #   · 「同组 vs 跨组」按 CFG$design$factors 的第一个因子 + 第二个因子各自判定
 #     （nifH 只按 Vegetation 分）；两组曲线同图对比。
 #   · 三口径都出：地理距离 / 环境距离 / 群落距离 vs 相似度。
@@ -368,7 +368,7 @@ md_distance_decay <- function(CFG) {
 
 
   # ---- 10. 出图 ----
-  # 画法逐项对照 09_Supp_assembly.R §6 的 FigS6（make_ddr_panel()）：
+  # 画法逐项对照 原实现 附图（make_ddr_panel）：
   #   散点 size = PT_SIZE_STD(MD_PT_SIZE$point)、alpha = PT_ALPHA_STD(MD_PT_SIZE$point_alpha)、
   #   颜色 = 该分组的 cols_veg / cols_zone（走 md_pal()）；
   #   拟合线 geom_smooth(method="lm", se=TRUE) 用 REG_LINE_COL/REG_LINE_LW/REG_RIBBON_A(MD_REG)；
@@ -378,11 +378,11 @@ md_distance_decay <- function(CFG) {
   pt <- md_pt(CFG)
   col_grp <- md_pal(CFG, c("Same", "Across"))
 
-  # in-panel 的 P 文案：照抄 nifH 11_shared.R::fmt_p()（ASCII；"NA" 不写 "—"）
+  # in-panel 的 P 文案：照抄 nifH 原脚本（ASCII；"NA" 不写 "—"）
   fmt_p_fig <- function(p) ifelse(is.na(p), "NA",
                            ifelse(p < 0.001, "P < 0.001", sprintf("P = %.3f", p)))
 
-  # 面板内右上角标注：照抄 FigS6 的 annotate() 位置与字号
+  # 面板内右上角标注：照抄 附图 的 annotate 位置与字号
   ann_layer <- function(r) {
     lab <- if (is.null(r) || is.na(r$slope))
       sprintf("n = %d\nnot fitted", r$n_pairs %||% 0L)
@@ -431,7 +431,7 @@ md_distance_decay <- function(CFG) {
       ggplot2::labs(x = "Geographic Distance (km)", y = "Bray-Curtis Similarity", tag = "B") +
       theme_md(CFG = CFG) +
       ggplot2::theme(legend.position = "bottom")
-    # 每条拟合线各自的 R2 / slope / P：锚在面板内部两侧（与 FigS6 同一标注格式）
+    # 每条拟合线各自的 R2 / slope / P：锚在面板内部两侧（与 附图 同一标注格式）
     for (i in seq_len(nrow(f_same))) {
       lvl <- as.character(f_same$group_level[i])
       pB <- pB + ggplot2::annotate("text",
@@ -443,7 +443,7 @@ md_distance_decay <- function(CFG) {
     }
   }
 
-  # C：按第一个因子的各水平单独拟合（对应 FigS6 的「按植被型分组」2x2 版式）
+  # C：按第一个因子的各水平单独拟合（对应 附图 的「按植被型分组」2x2 版式）
   pC <- md_empty_plot(CFG, "No per-level fit")
   if (has_geo && length(group_vars)) {
     g1 <- group_vars[1]
@@ -471,7 +471,7 @@ md_distance_decay <- function(CFG) {
     }
   }
 
-  # D（斜率森林图）**原脚本没有** —— nifH 09_Supp_assembly.R §6 的 FigS6 是
+  # D（斜率森林图）**原脚本没有** —— nifH 原实现 附图 是
   # (Bare|Herb)/(Shrub|Tree) 的 2×2 DDR 四格，没有任何森林图。故从图面移除；
   # 各口径的斜率/CI/P 仍完整写在 DDR_fits 表里。
 

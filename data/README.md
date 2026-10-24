@@ -33,7 +33,7 @@ nifH 扩增子论文数据中**只读抽取**而来（固定 seed = 123）。
 
 ## 这批数据的真实特征（不是程序错误）
 
-- **极端单例化**：原数据 23,873 个 ASV 里 23,251 个在 147 样本中只出现 1 次。
+- **极端单例化**：原数据中大量 ASV 在多样本中只出现 1 次。
   所以示范结果里会出现：**核心类群几乎为 0**（原论文实测 Core 0.06%、Transient_rare 98%）、
   **β 周转极高**、**漂变占绝对主导**（原论文实测 85.13%）、**环境解释力只有百分之几**。
 - 这些正是那篇论文的核心发现，不是 bug。
@@ -42,10 +42,10 @@ nifH 扩增子论文数据中**只读抽取**而来（固定 seed = 123）。
 
 ```powershell
 cd <micro-div-pipeline>
-D:/R-4.5.2/bin/Rscript.exe --vanilla assets/make_demo_data.R
+Rscript --vanilla assets/make_demo_data.R
 ```
 
-默认从 `D:/01-Academic/06-nifH_BEF/data` 读取源数据（**只读**）。
+默认从 `path/to/source/data` 读取源数据（**只读**）。
 换源目录用环境变量：`$env:MD_SRC='<路径>'`。
 
 ## 数据护栏

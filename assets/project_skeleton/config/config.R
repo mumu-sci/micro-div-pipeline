@@ -5,7 +5,7 @@
 # 其余参数保持模板默认；要改先查 references/02-params.md。
 # =============================================================================
 
-.tpl <- "D:/01-Academic/00-学术文件/analysis-packages/micro-div-pipeline/config/config_template.R"
+.tpl <- "path/to/micro-div-pipeline/config/config_template.R"
 if (!file.exists(.tpl)) stop("找不到配置模板：", .tpl, "\n请把 .tpl 改成你机器上 micro-div-pipeline 的实际位置")
 source(.tpl)
 

@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # 库文件。本包所有图件必须经 md_save_figure() 落盘（统一 pdf、统一校验）。
 #
-# ⚠ 视觉口径来自 nifH 论文的 `R代码/11_shared.R` §0，**逐项对齐，不要自造**：
+# ⚠ 视觉口径来自 原始研究的 原实现，**逐项对齐，不要自造**：
 #     theme_md()  ↔ theme_isme()        （border 0.5 / axis.line / legend.title 加粗 / strip 透明）
 #     MD_PT       ↔ S_TICK/S_TTL/S_LEG/S_ANN/S_TAG
 #     MD_PT_COMP  ↔ S_*_COMP            （显式值，**不是**统一 0.8 倍）
@@ -11,7 +11,7 @@
 #     MD_BUILTIN_PAL ↔ cols_zone / cols_veg / cols_assembly / cols_2x2
 #     回归线     ↔ REG_LINE_COL / REG_LINE_LW / REG_RIBBON_A
 #
-# 两条字号轨道（**nifH 论文踩过的坑，务必遵守**）：
+# 两条字号轨道（**原始研究踩过的坑，务必遵守**）：
 #   element_text(size = )        单位是 pt   -> 直接用 MD_PT$*
 #   geom_text / annotate(size = ) 单位是 mm   -> **必须** pt2gg(pt)
 # 且 geom_text 的 size 在构造时就固化，事后 + theme() 改不动；
@@ -21,7 +21,7 @@
 #   见 references/04-pitfalls.md B12；95_export_tables 有自动审计。
 # =============================================================================
 
-# ---- 字号（pt）—— 主图，对应 nifH 的 S_TICK / S_TTL / S_LEG / S_ANN / S_TAG ----
+# ---- 字号（pt）—— 主图，对应 原实现 S_TICK / S_TTL / S_LEG / S_ANN / S_TAG ----
 MD_PT <- list(
   tick   = 8,      # 坐标轴刻度        S_TICK
   title  = 9,      # 坐标轴标题        S_TTL
@@ -31,20 +31,20 @@ MD_PT <- list(
   strip  = 7.5     # 分面标签
 )
 
-# ---- 字号（pt）—— 拼图专用，对应 nifH 的 S_*_COMP（**显式值，不是统一比例**）----
+# ---- 字号（pt）—— 拼图专用，对应 原实现 S_*_COMP（**显式值，不是统一比例**）----
 MD_PT_COMP <- list(
   tick   = 6.5,    # S_TICK_COMP
   title  = 7.5,    # S_TTL_COMP
   legend = 6,      # S_LEG_COMP
   ann    = 5.5,    # S_ANN_COMP
   tag    = 8,      # S_TAG_COMP
-  strip  = 6       # S_LEG_COMP（nifH 的 strip.text 在拼图里用图例字号）
+  strip  = 6       # S_LEG_COMP（原实现 strip.text 在拼图里用图例字号）
 )
 
 # 兼容旧字段（早期版本用统一比例）；新代码请用 MD_PT_COMP
 MD_PT_COMP_RATIO <- 0.8
 
-# ---- 线宽 / 点大小 —— 对应 nifH 的 LW_AXIS / BOX_LW_STD / JIT_* / PT_* / S_PT ----
+# ---- 线宽 / 点大小 —— 对应 原实现 LW_AXIS / BOX_LW_STD / JIT_* / PT_* / S_PT ----
 MD_LW <- list(
   axis = 0.35,     # LW_AXIS
   box  = 0.4,      # BOX_LW_STD
@@ -56,7 +56,7 @@ MD_LW <- list(
 MD_PT_SIZE <- list(
   point        = 0.9,    # PT_SIZE_STD  回归图散点
   scatter      = 0.65,   # S_PT         一般散点（nifH：全稿散点缩小为原 1/2）
-  pcoa         = 1.4667, # 2.2 * 2/3    PCoA 排序散点（02_Fig02.R §B/C 的写法）
+  pcoa         = 1.4667, # 2.2 * 2/3    PCoA 排序散点（原脚本 §B/C 的写法）
   jitter       = 1.8,    # JIT_SIZE_STD 箱线图抖动点
   alpha        = 0.67,   # JIT_ALPHA_STD
   point_alpha  = 0.4,    # PT_ALPHA_STD 回归图散点透明度
@@ -165,8 +165,8 @@ theme_md_comp <- function(CFG = NULL) {
   )
 }
 
-#' 图例列数自适应（防溢出 —— nifH 的 FigS3 图例被裁过）
-#' @param nrow 给了就按行排（nifH 的 PCoA 图常用 `guide_legend(nrow = 1)`）；
+#' 图例列数自适应（防溢出 —— 原实现 附图 图例被裁过）
+#' @param nrow 给了就按行排（原实现 PCoA 图常用 `guide_legend(nrow = 1)`）；
 #'   给了 nrow 时忽略 ncol。
 md_guide_flex <- function(n_items, position = "bottom", bottom_max = 4, nrow = NULL) {
   if (!is.null(nrow)) return(ggplot2::guide_legend(nrow = max(1L, as.integer(nrow))))
@@ -179,34 +179,34 @@ md_guide_flex <- function(n_items, position = "bottom", bottom_max = 4, nrow = N
 }
 
 # ---------------------------------------------------------------------------
-# 配色 —— 内置具名色板，逐字照搬 nifH 11_shared.R
+# 配色 —— 内置具名色板，逐字照搬 nifH 原脚本
 # ---------------------------------------------------------------------------
 MD_BUILTIN_PAL <- list(
-  # cols_zone（11_shared.R:162-167）
+  # cols_zone（原脚本）
   zone = c(Coastal = "#89C4D7", Nearshore = "#4DAFB5",
            Xisha = "#2B6AA0", Nansha = "#3B2C6B"),
-  # cols_veg（11_shared.R:172-177）
+  # cols_veg（原脚本）
   veg = c(Bare = "#989898", Herb = "#959BB0",
           Shrub = "#60859E", Tree = "#B98079"),
-  # cols_assembly（11_shared.R:259-265）—— 逐字照搬，注意 nifH 本身有两组同色
+  # cols_assembly（原脚本）—— 逐字照搬，注意 nifH 本身有两组同色
   assembly = c("Homogeneous selection"  = "#80B1D2",
                "Variable selection"     = "#80B1D2",
                "Dispersal limitation"   = "#C7CEEA",
                "Homogenizing dispersal" = "#F6AAA1",
                "Drift"                  = "#C7CEEA"),
-  # cols_2x2（11_shared.R:823-826）
+  # cols_2x2（原脚本）
   quadrant = c(Core = "#D73027", Permanently_rare = "#999999",
                Conditionally_rare = "#E69F00", Transient_rare = "#4575B4"),
-  # 02_Fig02.R §D 周转 / 嵌套两色（原稿写死常量）
+  # 原脚本 §D 周转 / 嵌套两色（原稿写死常量）
   beta = c(turnover = "#5B93C4", nestedness = "#E0877C"),
-  # 02_Fig02.R §E 的 cols_ep4（γ 分解：分类学浅色族 / 系统发育深色族）
+  # 原脚本 §E 的 cols_ep4（γ 分解：分类学浅色族 / 系统发育深色族）
   gamma = c(taxonomic_alpha = "#AECFE6", taxonomic_turnover = "#F7CCC5",
             phylogenetic_alpha = "#5B93C4", phylogenetic_turnover = "#E0877C"),
-  # 03_Fig03_assembly.R §E 变差分解的分块色
+  # 原脚本 §E 变差分解的分块色
   vpa = c(geo = "#80B1D2", soil = "#F6AAA1", climate = "#C7CEEA")
 )
 
-# 08_Supp_diversity.R:277-282 的属配色（20 色硬编码 + Others 灰）
+# 原实现属配色（20 色硬编码 + Others 灰）
 MD_TAXON_GENUS20 <- c(
   "#FAF5B5", "#F9B063", "#F7CBDF", "#FF9AA2", "#FFB7B2", "#FAD0C4", "#FDE2E4", "#FBE7C6",
   "#FFDFD3", "#E6C9A8", "#F8E9A1", "#E2F0CB", "#B5EAD7", "#A8E6CF", "#D4F0F0", "#A0E7E5",
@@ -218,18 +218,18 @@ MD_TAXON_PHYLUM_OTHER <- "#A9A9A9"  # 门的 "Other"
 
 #' 分类单元配色 —— **逐项照抄 nifH 原脚本**，不是自造色板
 #'
-#' · `Phylum`（`01_Fig01.R:254-256`）：
+#' · `Phylum`（原脚本）：
 #'   `colorRampPalette(brewer.pal(12,"Set3"))(n)`，names 按**丰度降序**的 top_phyla 给，
 #'   再加 `Unclassified = #D3D3D3`、`Other = #A9A9A9`。
-#' · `Genus`（`08_Supp_diversity.R:277-283`）：
+#' · `Genus`（原脚本）：
 #'   20 色硬编码，names = `c(rev(top20_genera), "Others")` —— 即**升序**分配，
 #'   丰度最低的那个属拿第一色；其余归 "Others"（`#D7D7D5`）。
 #' · 其它层级原稿没有 → 退回 `md_pal()` 定性板并 `md_warn`，**不自造**。
 #'
 #' @param taxa 已按丰度**降序**排好的 top 类群名（本包 `top_taxa` 就是这个序）
 #' @param color_order 用于**给色板命名**的类群顺序。门的原脚本有个关键细节：
-#'   `phylum_colors` 的名字来自 `top_phyla`（**按 ASV 数量降序**，`01_Fig01.R:217`），
-#'   而面板的堆叠顺序来自 `top12_phyla`（**按平均丰度降序**，`01_Fig01.R:369`）；
+#'   `phylum_colors` 的名字来自 `top_phyla`（**按 ASV 数量降序**，原脚本），
+#'   而面板的堆叠顺序来自 `top12_phyla`（**按平均丰度降序**，原脚本）；
 #'   `scale_fill_manual` 是**按名字**取色的，所以实际效果是「数量序配色 + 丰度序堆叠」。
 #'   要逐色复刻就必须把 `color_order` 传成 ASV 数量降序的类群名。
 md_taxon_pal <- function(CFG, rank, taxa, other_name = "Other", color_order = NULL) {
@@ -279,20 +279,20 @@ MD_PAL_DEFAULT <- list(
   qualitative = c("#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F",
                   "#EDC948", "#B07AA1", "#FF9DA7", "#9C755F", "#BAB0AC",
                   "#86BCB6", "#D37295", "#A0CBE8", "#FFBE7D"),
-  # 地形高程渐变（nifH 07_S1_study_area_map.R §4 逐字两色）
+  # 地形高程渐变（nifH 原脚本 逐字两色）
   elevation = c("#B9D7A8", "#C9AE7E"),
   sem_pos = "#2166AC", sem_neg = "#B2182B",
-  # ---- 2026 毕业论文补充轮 ----
-  # 共现网络正/负边（毕业论文 5_network_structure.R:169 注释："正=steelblue, 负=indianred"）
+  # ---- 2026 补充轮 ----
+  # 共现网络正/负边（原实现 注释："正=steelblue, 负=indianred"）
   net_pos = "#4682B4", net_neg = "#CD5C5C",
-  # Zi-Pi 四类节点角色（毕业论文 5_network_structure.R:1064-1065 逐字）
+  # Zi-Pi 四类节点角色（原实现 逐字）
   zi_pi = c("Peripheral" = "#BDBDBD", "Connector" = "#4DAFB5",
             "Module Hub" = "#D73027", "Network Hub" = "#B2182B")
 )
 
 # ---------------------------------------------------------------------------
 # 共现网络的样式常量（模块 80）
-#   逐项照抄毕业论文 5_network_structure.R；模块不得自造网络配色/尺寸。
+#   逐项照抄原实现；模块不得自造网络配色/尺寸。
 #   布局（layout）走 CFG$network$style$layout —— 它只影响节点坐标，不影响数值。
 # ---------------------------------------------------------------------------
 MD_NET <- list(
@@ -308,13 +308,13 @@ MD_NET <- list(
   layout_group   = "fr",       # 分组网络布局（原脚本 layout_with_fr, niter = 5000）
   fr_niter       = 5000,
   # 节点属性图（80d）的版式：FALSE（默认）= 183 mm 宽、三格纵向排列，
-  # 与全包其余模块的"一图一号字梯"一致；TRUE = 复刻原文 Fig5a 的 533.4 x 177.8 mm 单排。
+  # 与全包其余模块的"一图一号字梯"一致；TRUE = 复刻原文 原图 533.4 x 177.8 mm 单排。
   wide_layout    = FALSE,
   role_colors    = c("Peripheral" = "#BDBDBD", "Connector" = "#4DAFB5",
                      "Module Hub" = "#D73027", "Network Hub" = "#B2182B"),
   zi_thr         = 2.5,      # Deng et al. 2012 阈值
   pi_thr         = 0.62,
-  # 随机网络比对的配色（**逐字照抄 5_network_structure.R:1750-1752**）
+  # 随机网络比对的配色（**沿用同一套样式**）
   random_cols    = c("Higher than random" = "#E31A1C",
                      "Lower than random"  = "#2166AC",
                      "Not significant"    = "#999999"),
@@ -396,7 +396,7 @@ md_pal_cont <- function(CFG, which = "sequential") {
 }
 
 # ---------------------------------------------------------------------------
-# 箱线图样式：默认完全复刻 nifH 的 plot_dual_factor_panel，但每项可覆盖
+# 箱线图样式：默认完全复刻 原实现 plot_dual_factor_panel，但每项可覆盖
 # ---------------------------------------------------------------------------
 MD_BOX_DEFAULT <- list(
   style          = "nifh",      # nifh | simple
@@ -410,7 +410,7 @@ MD_BOX_DEFAULT <- list(
   letters_colour = "grey20",
   show_n         = FALSE,       # 默认不标样本量（nifH 没有这个标注）
   y_mult         = 0.05,        # y scale 的 expansion(mult=)：nifH 用 ggplot2 默认 0.05
-                                #   （05_Fig05_decoupling.R §A 显式写 c(0.05,0.05)）
+                                #   （原脚本 §A 显式写 c(0.05,0.05)）
   kw_annot       = TRUE,        # 右上角 KW 注释
   y_from_zero    = TRUE,        # y 轴从 0 起
   y_expand       = 1.35,        # y 上限 = max * 该系数
@@ -428,7 +428,7 @@ md_box_cfg <- function(...) {
   b
 }
 
-# ---- 显著性标记与 P 值文案（对齐 nifH 的 sig_label / kw_fmt，**小写 p + 星号**）----
+# ---- 显著性标记与 P 值文案（对齐 原实现 sig_label / kw_fmt，**小写 p + 星号**）----
 #' 星号标记；p<0.05 -> *, <0.01 -> **, <0.001 -> ***, 其余 ns
 md_sig_label <- function(p) {
   ifelse(is.na(p), "NA",

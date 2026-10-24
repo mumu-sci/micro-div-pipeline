@@ -1,7 +1,7 @@
 # =============================================================================
 # R/45_response_curves.R ---- 模块 45：GAM / GAMM 响应曲线
 # -----------------------------------------------------------------------------
-# 源：毕业论文 3_environmental_drivers.R:1261-1345（§6 GAM 非线性响应，Fig3b-C）
+# 参考实现（§6 GAM 非线性响应，原图）
 #     契约见 _build-notes/micro-div-pipeline/ROUND5_MODULE_SPEC.md
 #
 # 导出：md_response_curves(CFG)
@@ -98,9 +98,9 @@ local_rc_resolve <- function(CFG, ana, ids, v, ai = NULL, po = NULL) {
   NULL
 }
 
-#' 取"随机森林重要性前 n 个变量"，对应毕业论文原脚本的
+#' 取"随机森林重要性前 n 个变量"，对应参考实现
 #' `gam_preds <- names(sort(rf_A_pcoa1$variable.importance, decreasing = TRUE))[1:3]`
-#' （`3_environmental_drivers.R:1271`）。
+#' （原脚本）。
 #'
 #' 三级来源，先到先用：
 #'   1. 模块 40 落盘的 `cache/40_env.rds`（`env$rf$enabled = TRUE` 时才有）；
@@ -193,7 +193,7 @@ md_response_curves <- function(CFG) {
 
     # ---- 自变量来源：x_from = "rf_top" 时**在因变量解析之后**再算 ----
     #   原脚本流水线：随机森林给环境变量排序 -> 取前 3 -> 逐个拟合 GAM
-    #   （3_environmental_drivers.R:1271）。RF 需要因变量那一列，所以放到下面 rc_d 建好之后。
+    #   （原脚本）。RF 需要因变量那一列，所以放到下面 rc_d 建好之后。
     rc_use_rf <- identical(rc_xfrom, "rf_top")
 
 
@@ -215,7 +215,7 @@ md_response_curves <- function(CFG) {
       if (length(rf)) {
         rc_xs <- rf
         rc_notes <- c(rc_notes, sprintf(
-          "x_from = 'rf_top'（对齐原脚本 3_environmental_drivers.R:1271）：取随机森林重要性前 %d 个变量（%s）；来源 = %s。",
+          "x_from = 'rf_top'（对齐原脚本）：取随机森林重要性前 %d 个变量（%s）；来源 = %s。",
           length(rf), paste(rf, collapse = ", "),
           attr(rf, "source") %||% "unknown"))
       } else {
@@ -274,7 +274,7 @@ md_response_curves <- function(CFG) {
       keep <- !is.na(ft$p_smooth) & ft$p_smooth <= rc_pmax
       rc_fallback <- FALSE
       if (!any(keep)) {
-        # 原脚本口径（3_environmental_drivers.R:1320 `if (gr$p_smooth > 0.1) next`）是**不画**。
+        # 原脚本口径（原脚本 `if (gr$p_smooth > 0.1) next`）是**不画**。
         # 但一个都不画会得到一张空图，读者看不到"跑过了、P 是多少"。
         # 与模块 83 的 `min_sig` 回退同一口径：**显示 P 最小的一个，并如实标注它没通过阈值**
         # （每格的 R2/P 注释本来就在图面上），同时在 Note 里写明这是回退。
@@ -325,7 +325,7 @@ md_response_curves <- function(CFG) {
   }
 
   # ---------------------------------------------------------------------------
-  # 出图：只出原脚本那一组 GAM 响应曲线（3_environmental_drivers.R:1316-1345）
+  # 出图：只出原脚本那一组 GAM 响应曲线（原脚本）
   #   ⚠ 2026-09-26（第六轮）：原实现里的 **B 面板（EDF / -log10(P) 横向条形）**
   #     是自造的，原代码没有这张图 —— 已删除。本模块现在只有这一组曲线。
   # ---------------------------------------------------------------------------
@@ -342,7 +342,7 @@ md_response_curves <- function(CFG) {
     tp0 <- md_write_xlsx(CFG, "45_response_curves", list(
       Curve_fits = if (nrow(fit_out0)) fit_out0 else NULL,
       Note = data.frame(Note = c(
-        "口径源：毕业论文 3_environmental_drivers.R:1261-1345（Fig3b-C 的 GAM 响应曲线）。",
+        "口径参考实现（原图 GAM 响应曲线）。",
         sprintf("y = %s；engine = %s；k = %d。", rc_y_used, rc_engine, rc_k),
         sprintf("筛选口径照原脚本：只画 p_smooth <= %s 的平滑项；本次一个都没有通过。",
                 format(rc_pmax)),
@@ -393,12 +393,12 @@ md_response_curves <- function(CFG) {
   names(fit_out) <- c("term", "engine", "edf", "p_smooth", "r2", "n", "nonlinear")
 
   note_df <- data.frame(Note = c(
-    sprintf("口径源：毕业论文 3_environmental_drivers.R:1261-1345（Fig3b-C 的 GAM 响应曲线）。"),
+    sprintf("口径参考实现（原图 GAM 响应曲线）。"),
     sprintf("因变量 y = %s（来源：%s）；engine = %s；k = %d；REML。",
             rc_y_used, rc_y_src %||% "NA", rc_engine, rc_k),
     sprintf("random = %s（非空且 engine = gam 时共享 md_gam_curve() 内部走 mgcv::gamm；GAMM 的 summary() 不提供 s.pv，故 p_smooth 可能为 NA）。",
             if (is.null(rc_random) || !nzchar(rc_random)) "NULL" else rc_random),
-    sprintf("筛选：只画 p_smooth <= %s 的变量（原脚本 3_environmental_drivers.R:1320 口径）；一个都没通过时按原脚本不出曲线，只在图里给说明。",
+    sprintf("筛选：只画 p_smooth <= %s 的变量（原脚本 口径）；一个都没通过时按原脚本不出曲线，只在图里给说明。",
             format(rc_pmax)),
     sprintf("每格标题 %s ~ s(x)；R2/P 以面板内注释给出（原文 1334-1339 行的版式）。",
             rc_y_used),

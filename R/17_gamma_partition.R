@@ -163,7 +163,7 @@ md_gamma_partition <- function(CFG) {
   }
 
   # ---- 图 ----
-  # 只出 γ 分解（= 原脚本 02_Fig02.R §E 的 fig2E，**单面板**）。
+  # 只出 γ 分解（= 原脚本 §E 的 fig2E，**单面板**）。
   # 原脚本**没有覆盖度面板**，所以这里不再画 B（iNEXT 的 SC）——
   # 覆盖率数字仍写在 Coverage 表里；画图函数 local_fig_coverage() 保留备用。
   plots <- list(A = local_fig_gamma(part_df, CFG))
@@ -495,7 +495,7 @@ local_pd_asy <- function(asy, q) {
        se  = if (!is.na(se_col)) as.numeric(asy[[se_col]][i]) else NA_real_)
 }
 
-# γ 分解的组分配色与图例文字 —— 照抄 02_Fig02.R §E 的 cols_ep4 / labs_ep4：
+# γ 分解的组分配色与图例文字 —— 沿用同一套样式 §E 的 cols_ep4 / labs_ep4：
 #   分类学整族浅色、系统发育整族深色；组分色相不变（turnover = 蓝系、alpha = 鲑鱼系）。
 # 说明：R/shared/12_plot_theme.R 的 MD_BUILTIN_PAL 没有这一族颜色，
 #       md_pal() 会落到 qualitative 兜底色、与原图不一致，故按原脚本照抄这 4 个 hex
@@ -509,7 +509,7 @@ local_gamma_labels <- c(Taxonomic_turnover    = "Taxonomic turnover (gamma - alp
                         Phylogenetic_turnover = "Phylogenetic turnover (gamma - alpha)",
                         Phylogenetic_alpha    = "Phylogenetic alpha")
 
-#' 面板 A：γ 分解（Hill 刻度）—— 画法照抄 02_Fig02.R §E（fig2E）：
+#' 面板 A：γ 分解（Hill 刻度）—— 画法沿用同一套样式 §E（fig2E）：
 #'   · 每个分组两根柱：左 = 分类学、右 = 系统发育（本包 engine=iNEXT 时只有分类学，
 #'     按原脚本同一套水平退化为一根柱）
 #'   · 柱内堆叠 α 段（0..α）+ 周转段（α..γ），用 geom_rect 手工累计 xmin/xmax
@@ -548,7 +548,7 @@ local_fig_gamma <- function(part_df, CFG) {
   grp_idx <- data.frame(Group = levels(d$Lab), idx = seq_along(levels(d$Lab)),
                         stringsAsFactors = FALSE)
   d <- merge(d, grp_idx, by.x = "Lab", by.y = "Group", all.x = TRUE, sort = FALSE)
-  BAR_OFF <- 0.19   # 照抄 02_Fig02.R 顶部常量
+  BAR_OFF <- 0.19   # 沿用同一套样式 顶部常量
   BAR_HW  <- 0.17
   d$xc <- d$idx + ifelse(d$Type == "Phylogenetic", BAR_OFF, -BAR_OFF)
 

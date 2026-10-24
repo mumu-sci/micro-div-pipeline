@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # 库文件。每个函数只负责"把一张图画出来"，不做统计、不读文件。
 # 所有 geom_text/annotate 的 size 一律走 pt2gg()，字号通过参数传入
-# （nifH 论文踩过的坑：geom_text 的 size 在构造时固化，事后 + theme() 改不动）。
+# （原始研究踩过的坑：geom_text 的 size 在构造时固化，事后 + theme 改不动）。
 # =============================================================================
 
 #' 面板为空时的占位图（模块降级时用，避免出 0 字节文件）
@@ -148,7 +148,7 @@ local_letters_df <- function(letters, d, y, x, lv, b) {
 
 #' 双因子箱线：x 轴 = 两个因子的组合（顺序由 levels 决定）
 #'
-#' 默认样式**完全复刻 nifH 的 plot_dual_factor_panel**：
+#' 默认样式**完全复刻 原实现 plot_dual_factor_panel**：
 #'   · 空心箱体（`fill = NA`）+ 按 `color_by` 给**箱体边框与抖动点**上色（nifH 用第二因子）
 #'   · 字母画在每组 `max(y) * letters_at`（默认 1.08）处，加粗、grey20
 #'   · y 轴从 0 起、上限 = max * 1.35；刻度朝内
@@ -378,7 +378,7 @@ md_bar_stack <- function(df, x, y, fill, colors = NULL, xlab = NULL, ylab = NULL
                          tag = NULL, width = 0.65, pt = MD_PT, x_angle = 45,
                          legend_pos = "bottom", ncol = NULL,
                          outline_colour = NA, outline_lw = 0.15, drop = TRUE) {
-  # outline_colour/lw：nifH Fig3B 用 `colour="white", linewidth=0.2` 做柱间白描边
+  # outline_colour/lw：nifH 原图 用 `colour="white", linewidth=0.2` 做柱间白描边
   # drop：FALSE 时保留未出现的因子水平（原脚本的 scale_fill_manual(drop=FALSE)）
   g <- ggplot2::ggplot(df, ggplot2::aes(x = .data[[x]], y = .data[[y]], fill = .data[[fill]])) +
     ggplot2::geom_col(width = width, colour = outline_colour, linewidth = outline_lw)
@@ -448,7 +448,7 @@ md_forest <- function(df, term, estimate, lo = NULL, hi = NULL, p = NULL,
 
 #' 直方图 + 双侧参考线标注（标注锚在面板内部，避免被裁）
 #'
-#' 原图（nifH 09_Supp_assembly.R §5 / 11_shared.R plot_bnti_hist）需要的样式都已暴露为参数：
+#' 原图（nifH 原脚本 / 原脚本 plot_bnti_hist）需要的样式都已暴露为参数：
 #' `alpha`（原 0.7）、`outline_colour/lw`、`ref_col/ref_lw/ref_type`（原 red / 0.8）、
 #' `label_vjust`（原 1.15）、`x_expand`（RCbray 原 expansion(mult = 0.22)）。
 md_hist <- function(df, x, bins = 40, ref = NULL, fill = "steelblue",
@@ -507,7 +507,7 @@ md_quadrant <- function(df, x, y, hline = 0, vline = 0, color = NULL, colors = N
     ggplot2::theme(legend.position = if (is.null(color)) "none" else "bottom")
 }
 
-#' 三圆 Venn（变差分解用）—— **逐行照抄 nifH `03_Fig03_assembly.R:288-329` 的 `draw_venn3()`**
+#' 三圆 Venn（变差分解用）—— **逐行照抄 nifH 原脚本 的 `draw_venn3`**
 #'
 #' 几何：圆半径 1.15、圆心落在半径 0.85 的三个方向（90°/210°/330°）、标签 offset 1.55；
 #' 填充 alpha 0.3 + 灰边 0.7；7 个百分比标签（3 个独立 + 3 个两两 + 1 个三交）；
@@ -565,14 +565,14 @@ md_venn3 <- function(lab1, lab2, lab3,
 }
 
 #' NRI / NTI 面板（±2 参考带 + 分组箱线 + CLD 字母 + KW 注释）
-#' 样式与 md_box_group 同源，便于 Fig3A / FigS4 口径一致（nifH 的 plot_nri_nti）。
+#' 样式与 md_box_group 同源，便于 原图 / 附图 口径一致（原实现 plot_nri_nti）。
 md_nri_nti_panel <- function(df, metric, group, order_levels = NULL,
                              colors = NULL, ref = c(-2, 2), ylab = NULL, tag = NULL,
                              x_angle = 45, x_one_line = NULL, pt = MD_PT,
                              letters = NULL, kw_text = NULL,
                              color_by = NULL, inward_ticks = NULL,
                              letters_at = NULL,
-                             # 以下默认值逐项 = nifH 11_shared.R §4.2 plot_nri_nti()
+                             # 以下默认值逐项 = nifH 原脚本 plot_nri_nti
                              ref_col = "red", ref_lw = MD_LW$ref, ref_alpha = 0.5,
                              y_expand = c(0.05, 0.15),
                              letters_at_ori = 1.18,
@@ -600,7 +600,7 @@ md_nri_nti_panel <- function(df, metric, group, order_levels = NULL,
 
   kmax <- tryCatch(stats::kruskal.test(d[[metric]] ~ d[[group]])$p.value,
                    error = function(e) NA_real_)
-  # 默认值逐项对齐 nifH 11_shared.R §4.2 plot_nri_nti()：
+  # 默认值逐项对齐 nifH 原脚本 plot_nri_nti：
   #   ±2 参考线 = red / alpha 0.5 的虚线；jitter 用整份 JIT_SIZE_STD（不缩放）；
   #   字母在 max_y*1.18、vjust 0、黑色；y 轴顶部留 15% 余量（原文注释说明必需）；
   #   **不在左下角画 Kruskal-Wallis**（原图没有，由 show_kw_test 显式打开）
@@ -655,17 +655,17 @@ md_nri_nti_panel <- function(df, metric, group, order_levels = NULL,
 }
 
 # =============================================================================
-# 2026 毕业论文补充轮新增图型
+# 2026 补充轮新增图型
 #   · md_lollipop()           指示种 IndVal 点棒图（10_composition 的 indicator 面板 / 81_taxon_group）
 #   · md_rf_importance_plot() 随机森林重要性横向条形（40_env_summary 的 rf 面板）
 #   · md_gam_curve_plot()     GAM/GAMM 响应曲线（45_response_curves）
 #   · md_venn2()              两圆 Venn（82_taxon_share 在 2 水平时的退化情形）
-# 每一条的版式都逐项照抄毕业论文原脚本，参数只暴露"样式"不暴露"统计"。
+# 每一条的版式都逐项照抄参考实现，参数只暴露"样式"不暴露"统计"。
 # =============================================================================
 
 #' IndVal 指示种点棒图（横向 lollipop）
 #'
-#' 源：`S4_supplementary_taxa.R:222-269`（Fig08a / Fig08b）
+#' 参考实现（原图 / 原图）
 #' 原文版式：`geom_segment`(到 0) + `geom_point`(1.8) + 显著性星号文本
 #' （y 偏移 = `ifelse(IndVal > 0.85, -0.06, 0.04)`）+ `coord_flip()` +
 #' 组内按 IndVal 降序 + 图例关掉（共用图例在拼图时收集）+ 标题左对齐加粗。
@@ -710,7 +710,7 @@ md_lollipop <- function(df, label = "label", indval = "indval", level = "level",
 
 #' 随机森林变量重要性（横向条形，相对重要性缩放到 max = 1）
 #'
-#' 源：`3_environmental_drivers.R:1232-1250`（`p_rf`）—— 单色单柱、无 dodged、
+#' 参考实现（`p_rf`）—— 单色单柱、无 dodged、
 #' 无 model 图例；x 轴题 "Relative permutation importance"；y 轴题关掉。
 md_rf_importance_plot <- function(df, variable = "Variable",
                                   importance = "Importance_scaled",
@@ -741,7 +741,7 @@ md_rf_importance_plot <- function(df, variable = "Variable",
 
 #' GAM / GAMM 响应曲线（点 + 拟合线 + 95% 置信带）
 #'
-#' 源：`3_environmental_drivers.R:1329-1343` —— 灰色 95% ribbon（fill grey80,
+#' 参考实现 —— 灰色 95% ribbon（fill grey80,
 #' alpha 0.5）、`#0072B2` 拟合线、灰点 alpha 0.3；R²/P 以**面板内注释**给出
 #' （原注：标题写法在 183 mm 三列排布下会互相压字）。
 md_gam_curve_plot <- function(curve, points = NULL, title = NULL, subtitle = NULL,

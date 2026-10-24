@@ -1,7 +1,7 @@
 # =============================================================================
 # R/22_phylo_beta.R -- 系统发育 beta 多样性分解（turnover / nestedness）
 # -----------------------------------------------------------------------------
-# 方法（与 nifH 论文 11_shared.R §3 compute_phylo_sorensen + 14_Supp_phylo_beta.R 对齐）：
+# 方法（与 原始研究 原脚本 compute_phylo_sorensen + 原脚本 对齐）：
 #   · 先在 prev >= CFG$phylo$prev_min 的**非单例子集**上做计算 -- 全树上直接跑
 #     phylo.beta.pair 是 O(n²) 内存爆炸（nifH 实测卡死）；子集内为空的样本剔除。
 #   · 树：确保 rooted -> multi2di（多分叉按零长枝拆开），再 keep.tip 到子集。

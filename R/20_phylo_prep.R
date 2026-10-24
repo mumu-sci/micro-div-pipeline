@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # 做：tip 与 ASV 对齐检查 -> 按 CFG$phylo$root_method 生根 -> 二叉化 ->
 #     剪到当前 ASV 集 -> 出 fan 树图（ggtreeExtra::geom_fruit 多环：
-#     分类色环 -> 各设计因子色环 -> 最外丰度条形环），画法对照 01_Fig01.R §A
+#     分类色环 -> 各设计因子色环 -> 最外丰度条形环），画法对照 原脚本 §A
 #
 # 无树 / phylo$enabled = FALSE 时优雅 SKIP（ITS 用户的典型场景）。
 #
@@ -110,7 +110,7 @@ md_phylo_prep <- function(CFG) {
   )
   saveRDS(prep, md_path(CFG, "cache", "20_phylo_prep.rds"))
 
-  # ---- 6. 分类环数据（照抄 01_Fig01.R §A 1.2/1.3/1.7，L120-147 + L217-227）----
+  # ---- 6. 分类环数据（沿用同一套样式 §A 1.2/1.3/1.7，L120-147 + L217-227）----
   ring_rank <- CFG$phylo$ring_rank %||% "Phylum"
   top_n     <- CFG$phylo$ring_top_n %||% 10L
   ring_df <- NULL; ring_note <- "未提供 taxonomy，未画分类环"
@@ -127,7 +127,7 @@ md_phylo_prep <- function(CFG) {
                         " 个分类，保留前 ", length(keep_g), " 个，其余归 Other")
   }
 
-  # ---- 7. 分组环 / 丰度环的数据（照抄 01_Fig01.R §A 1.4-1.6，L149-211）----
+  # ---- 7. 分组环 / 丰度环的数据（沿用同一套样式 §A 1.4-1.6，L149-211）----
   smp20  <- CFG$data$sample_col
   meta20 <- md_core_meta(CFG)
   meta20 <- meta20[match(colnames(m), meta20[[smp20]]), , drop = FALSE]
@@ -145,14 +145,14 @@ md_phylo_prep <- function(CFG) {
 
   facs20 <- intersect(CFG$design$factors %||% character(0), names(meta20))
 
-  # 树环上的文字/轴线尺寸：照抄 01_Fig01.R L80 的 RING_TXT_MM <- pt2gg(S_LEG_COMP) * 0.5
+  # 树环上的文字/轴线尺寸：沿用同一套样式 L80 的 RING_TXT_MM <- pt2gg(S_LEG_COMP) * 0.5
   RING_TXT_MM  <- pt2gg(MD_PT_COMP$legend) * 0.5
-  # 外环单色：照抄 01_Fig01.R L332 的 fill = colour = "#80B1D2"
+  # 外环单色：沿用同一套样式 L332 的 fill = colour = "#80B1D2"
   RING_BAR_COL <- "#80B1D2"
   # ⚠ axis.params 必须**就地写成字面 list**（照抄原脚本的写法）。实测 ggtreeExtra 1.20.1
   #   把 axis.params 存进变量再传进去时会静默丢掉整条环轴（图中的环名与刻度全部不出现）。
 
-  # ---- 8. 出图：fan 树 + 多环（逐行照抄 01_Fig01.R §A L276-344）----
+  # ---- 8. 出图：fan 树 + 多环（逐行沿用同一套样式 §A L276-344）----
   #   基础树 ggtree(layout="fan", open.angle=20, size=0.04, colour="black")
   #   -> new_scale_fill() + geom_fruit(geom_tile) 逐环叠加（分类环 width 0.10 / 分组环 0.15）
   #   -> new_scale_fill() + geom_fruit(geom_bar) 丰度条形环（pwidth 0.22, offset 0.05）
@@ -205,8 +205,8 @@ md_phylo_prep <- function(CFG) {
                          hjust = 0.5, vjust = 0.5, nbreak = 3),
       grid.params = list())
 
-  # 树面板收尾：**本模块是独立成图，必须自己出图例**（原 01_Fig01.R 的面板内写
-  #   legend.position="none"，是因为整页 Fig1 底部另有一条共用图例行提供图例；
+  # 树面板收尾：**本模块是独立成图，必须自己出图例**（原实现面板内写
+  #   legend.position="none"，是因为整页 原图 底部另有一条共用图例行提供图例；
   #   本包按模块拆图后没有那条行，所以这里改为底部显示各环图例）。
   p <- p + ggplot2::theme(legend.position = "bottom",
                           legend.direction = "horizontal",
@@ -248,7 +248,7 @@ md_phylo_prep <- function(CFG) {
 trimnames <- function(x) trimws(gsub("^'|'$", "", gsub('^"|"$', "", x)))
 
 #' 每个 ASV 在因子各水平上的平均相对丰度，取最高的一组（用于树的分组环）。
-#' 口径照抄 01_Fig01.R §A 1.5/1.6（L173-211）的 veg_max / zone_max：
+#' 口径沿用同一套样式 §A 1.5/1.6（L173-211）的 veg_max / zone_max：
 #'   rowMeans(rel[samples_of_level, ]) -> which.max -> 该水平名（并列取第一个）。
 local20_dominant <- function(rel, meta, ids, var, levels) {
   mat <- vapply(levels, function(lv) {

@@ -29,7 +29,7 @@ local_factor_levels <- function(CFG, meta, var) {
   obs
 }
 
-#' 形状值：照抄 02_Fig02.R §B/C 的
+#' 形状值：沿用同一套样式 §B/C 的
 #'   scale_shape_manual(values = c(Bare = 16, Herb = 17, Shrub = 15, Tree = 18))
 #' 原脚本没有的水平按同一族的填充形状补位（本包示范数据的 Vegetation 只有 Bare/Herb/Tree）。
 local_shape_values <- function(lv) {
@@ -83,7 +83,7 @@ local_ellipse_groups <- function(df, group, min_n, sd_tol = 1e-6) {
   list(keep = keep, dropped = if (length(drop)) do.call(rbind, drop) else NULL)
 }
 
-#' 单个排序面板 —— 画法逐行照抄 02_Fig02.R §B/C（fig2A / fig2B）：
+#' 单个排序面板 —— 画法逐行沿用同一套样式 §B/C（fig2A / fig2B）：
 #'   · 椭圆：stat_ellipse(geom = "polygon", alpha = 0.10 * 4/3, level = CFG 值,
 #'            type = "norm", colour = NA, show.legend = FALSE)  —— 无边框、只填半透明多边形
 #'   · 散点：geom_point(size = 2.2 * 2/3, alpha = 0.75, stroke = 0.5)，
@@ -281,7 +281,7 @@ md_ordination <- function(CFG) {
                            "sd_axis1", "sd_axis2", "drawn", "reason")]
   }
 
-  # ---- 出图：每个距离度量一个面板（照 02_Fig02.R §B/C 的构图）----
+  # ---- 出图：每个距离度量一个面板（照 原脚本 §B/C 的构图）----
   #   原图是「一个距离度量 = 一个 PCoA 面板」，面板内按 Zone 着色、按 Vegetation 给形状；
   #   故这里不再按因子拆面板，颜色固定用第一个设计因子、形状用第二个（若存在）。
   panels <- list()

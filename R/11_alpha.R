@@ -52,7 +52,7 @@ local_group_var <- function(CFG, meta, factors = NULL, name = NULL) {
   list(vals = vals, levels = labs, factors = factors, name = name %||% paste(factors, collapse = "_"))
 }
 
-#' 指标名 -> 纵轴题；逐字照抄 11_shared.R::index_labels（L1602-1609）：
+#' 指标名 -> 纵轴题；沿用同一套样式（L1602-1609）：
 #'   Observed 在图上写作 Richness，Faith's PD 写作 PD（nifH 原图口径，不要自己改写）
 local_index_label <- function(ix) {
   m <- c(Pielou = "Pielou", Observed = "Richness", Shannon = "Shannon",
@@ -284,7 +284,7 @@ md_alpha <- function(CFG) {
   # ---- 3. 图：每个指数两因子箱线（A–F/G）----
   # 字号走**拼图轨道** MD_PT_COMP（12_plot_theme.R）—— 本模块把多个面板拼成一张图，
   # 与 local_grid()/theme_md_comp() 对 element_text 的处理保持同一条轨道
-  # （原图 01_Fig01.R Fig1D/E 的右列小面板同样走 *_COMP：AX_TICK_PT / AX_TTL_PT / S_ANN_COMP）。
+  # （原图右列小面板同样走 *_COMP：AX_TICK_PT / AX_TTL_PT / S_ANN_COMP）。
   pt <- md_pt(CFG, comp = TRUE)
   plots <- list()
   f1 <- factors[1]
@@ -370,7 +370,7 @@ md_alpha <- function(CFG) {
   step <- as.integer(CFG$alpha$rarefaction$step %||% 200)
   nboot <- as.integer(CFG$alpha$rarefaction$nboot %||% 50)
   ci_on <- isTRUE(CFG$alpha$rarefaction$ci %||% TRUE)
-  # 注：原图 08_Supp_diversity.R Part C 的稀释曲线上**没有**抽平深度竖线，
+  # 注：原图 Part C 的稀释曲线上**没有**抽平深度竖线，
   #     故本模块不再取 ref_depth、也不画 vline（只改画法，抽平深度的口径未动）。
 
   rare_df <- NULL; ci_df <- NULL; inext_ok <- FALSE
@@ -460,7 +460,7 @@ md_alpha <- function(CFG) {
          if (is.null(ci_df)) 0 else nrow(ci_df))
 
   cols1 <- if (length(gvars)) md_pal(CFG, gvars[[1]]$levels, gvars[[1]]$name) else NULL
-  # 稀释曲线画法照抄 08_Supp_diversity.R Part C（L596-643）：
+  # 稀释曲线画法沿用同一套样式 Part C（L596-643）：
   #   geom_line(linewidth = 0.3 (= MD_LW$line * 0.75), alpha = 0.7 (= MD_PT_SIZE$alpha))
   #   均值线 linewidth = REG_LINE_LW (= MD_LW$line)、置信带 alpha = REG_RIBBON_A (= MD_REG$ribbon_alpha)、colour = NA
   #   labs(x = "Reads sampled", y = "ASV richness")、图例置底

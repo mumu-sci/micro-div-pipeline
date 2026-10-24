@@ -1,9 +1,9 @@
 # =============================================================================
 # R/80_network.R ---- 模块 80：共现网络（全局拓扑 + 节点角色 + 分组网络 + 亚网络）
 # -----------------------------------------------------------------------------
-# 源：毕业论文 `5_network_structure.R`（物理合并了 12_network_structure.R 与
-#     13_abundant_rare_network.R 两个 local() 成员块）—— 图 Fig5a / Fig5b /
-#     FigS7 / Fig5c / Fig5d / Fig5e + 原脚本后来并入的 Sankey 面板。
+# 参考实现（物理合并了 原脚本 与
+#     原脚本 两个 local 成员块）—— 图 原图 / 原图 /
+#     附图 / 原图 / 原图 / 原图 + 原脚本后来并入的 Sankey 面板。
 # 契约：_build-notes/micro-div-pipeline/ROUND5_MODULE_SPEC.md
 #
 # 口径（逐项照抄原脚本，不做"顺手优化"）：
@@ -113,7 +113,7 @@ local80_group_cols <- function(CFG, levels, name) {
 # 建网 / 拓扑 / 节点角色（逐行照抄原脚本）
 # -----------------------------------------------------------------------------
 
-#' 全局网络构建（源：5_network_structure.R:142-175）
+#' 全局网络构建
 #' @param otu_mat ASV x 样本 **相对丰度（%）**
 local80_calc_network <- function(otu_mat, min_cor = 0.5, min_prev = 0.02) {
   prev <- rowSums(otu_mat > 0.01) / ncol(otu_mat)
@@ -136,7 +136,7 @@ local80_calc_network <- function(otu_mat, min_cor = 0.5, min_prev = 0.02) {
   list(g = g, cor_mat = cor_mat, kept_asv = rownames(mat))
 }
 
-#' 分组/亚网络构建（源：5_network_structure.R:790-822 与 1910-1928）
+#' 分组/亚网络构建
 #' 与全局网络的唯一差别：先剔除零方差 ASV、样本数 < 4 直接 NULL
 local80_group_net <- function(otu_mat, min_cor = 0.5, min_prev = 0.02) {
   if (is.null(otu_mat) || ncol(otu_mat) < 4) return(NULL)
@@ -163,7 +163,7 @@ local80_group_net <- function(otu_mat, min_cor = 0.5, min_prev = 0.02) {
   g
 }
 
-#' 节点中心性（源：5_network_structure.R:205-241）
+#' 节点中心性
 local80_centrality <- function(g) {
   empty <- data.frame(ASV_ID = character(0), Betweenness = numeric(0),
                       Closeness = numeric(0), Degree = numeric(0),
@@ -197,9 +197,9 @@ local80_centrality <- function(g) {
              stringsAsFactors = FALSE)
 }
 
-#' 网络韧性 R（源：5_network_structure.R:268-281）
+#' 网络韧性 R
 #' ⚠ 原脚本的 set.seed(2026) 排在本函数**之外、30 次模拟之后**（L401），
-#'   造成 Fig5b 不可复现。本模块要求调用方在进入样本循环**之前**先 md_seed()。
+#'   造成 原图 不可复现。本模块要求调用方在进入样本循环**之前**先 md_seed。
 local80_robustness <- function(g, nsim = 30L) {
   n <- igraph::vcount(g)
   if (n < 3) return(NA_real_)
@@ -217,7 +217,7 @@ local80_robustness <- function(g, nsim = 30L) {
   mean(outs)
 }
 
-#' 样本级网络指标（源：5_network_structure.R:283-384）
+#' 样本级网络指标
 local80_sample_metrics <- function(g, otu_mat, meta, sample_col,
                                    factors, robustness_nsim = 30L,
                                    group_net = FALSE) {
@@ -310,7 +310,7 @@ local80_sample_metrics <- function(g, otu_mat, meta, sample_col,
   out
 }
 
-#' 单组网络拓扑指标（源：5_network_structure.R:825-885）
+#' 单组网络拓扑指标
 local80_group_topology <- function(g, group_name, group_type, n_samples) {
   empty_row <- data.frame(
     Group = group_name, Type = group_type, N_Samples = n_samples,
@@ -363,7 +363,7 @@ local80_group_topology <- function(g, group_name, group_type, n_samples) {
     stringsAsFactors = FALSE)
 }
 
-#' Zi-Pi 节点角色（源：5_network_structure.R:1024-1058）
+#' Zi-Pi 节点角色
 local80_zi_pi <- function(g, zi_thr = 2.5, pi_thr = 0.62) {
   modules <- igraph::V(g)$module
   deg_all <- igraph::degree(g)
@@ -392,7 +392,7 @@ local80_zi_pi <- function(g, zi_thr = 2.5, pi_thr = 0.62) {
   out
 }
 
-#' 2x2 丰度 x 出现率四象限（源：5_network_structure.R:1884-1893 的 classify_2x2）
+#' 2x2 丰度 x 出现率四象限
 #' 复用共享库 md_niche_table()（同一口径，含 Levins' B 便于附表），阈值走 CFG。
 local80_cells <- function(rel, a_thr, p_thr) {
   nt <- md_niche_table(rel, a_thr = a_thr, p_thr = p_thr, index = "levins")
@@ -401,7 +401,7 @@ local80_cells <- function(rel, a_thr, p_thr) {
              stringsAsFactors = FALSE)
 }
 
-#' 与随机网络比对（源：5_network_structure.R:1109-1149）
+#' 与随机网络比对
 local80_random <- function(g, n_random = 100L) {
   n_nodes <- igraph::vcount(g); n_edges <- igraph::ecount(g)
   rs <- data.frame(avg_degree = numeric(n_random), density = numeric(n_random),
@@ -448,7 +448,7 @@ local80_random <- function(g, n_random = 100L) {
 #' @param layout 已算好的布局矩阵；NULL 时按 st$layout 现算（调用方必须先 md_seed）
 #' @param legend 是否在面板内显示 Phylum 图例。默认 FALSE —— 网络的 Phylum /
 #'   Correlation 图例由专门的 local80_net_legend() 面板承载，避免 8 张分组网络
-#'   各画一份重复图例（原图 Fig5c 的做法也是把图例单独放在第 3 行）。
+#'   各画一份重复图例（原图做法也是把图例单独放在第 3 行）。
 #' @param guides_fill 是否保留 fill 图例（"keep" / "none"）。分组网络面板用
 #'   "none"：它们与图例带同名同义，收集时会合成一坨重复图例。global 面板用
 #'   "keep"：它含全部 6 个门，图例带上缺的门（如 Actinobacteria）由它补全。
@@ -591,7 +591,7 @@ local80_layout_fr <- function(g) {
 }
 
 # -----------------------------------------------------------------------------
-# 度量箱线图（源：5_network_structure.R:1481-1597 的 fig5b_* 三函数）
+# 度量箱线图
 # -----------------------------------------------------------------------------
 
 #' 每个度量在某个因子上的统计：主检验 P、rank-based R2、CLD 字母与字母基线
@@ -859,7 +859,7 @@ md_network <- function(CFG) {
 
       # 3) 样本级指标
       # ⚠ 本行是相对原文的**唯一 bug 修复**：原脚本的 set.seed 在 robustness_R()
-      #   的 30 次模拟之后（L401），导致 Fig5b 每次都不一样。这里提前播种。
+      #   的 30 次模拟之后（L401），导致 原图 每次都不一样。这里提前播种。
       md_seed(CFG, md_offset(CFG, "network_robustness", 8220L))
       sample_metrics <- local80_sample_metrics(
         g_global, otu_filt, meta, smp, factors,
@@ -1050,7 +1050,7 @@ md_network <- function(CFG) {
   if (!is.null(f_c)) figures <- c(figures, "figures/80c_network_turnover.pdf")
 
   # ===========================================================================
-  # 图 80d：节点属性（原文 Fig5a：A betweenness | B 度-丰度 | C Zi-Pi）
+  # 图 80d：节点属性（原文 原图：A betweenness | B 度-丰度 | C Zi-Pi）
   #   ⚠ 2026-09-26（第六轮）：原实现按原文的 533.4 x 177.8 mm 单排三格出图，
   #     在屏幕上按宽度缩放显示时字与点比其余 183 mm 的图明显小。用户要求"统一配置"，
   #     故改为 **183 mm 宽、三格纵向排列**，字号/点尺寸与全包其余模块完全一致。
@@ -1122,7 +1122,7 @@ md_network <- function(CFG) {
     add_note("CFG$network$metrics_supp_figure = FALSE：未出 80_network_metrics_supp.pdf")
   }
   # 负内聚力在原始 |r| 阈值下常常无负边 —— 全 NA 时把原因写清楚，
-  # 不要让它看起来像"算错了"（原脚本 Fig5b 的注释也记录了同一现象）。
+  # 不要让它看起来像"算错了"（原图注释也记录了同一现象）。
   if ("Cohesion_neg" %in% names(sample_metrics) &&
       !any(is.finite(sample_metrics$Cohesion_neg))) {
     add_note("Cohesion_neg 全为 NA：原始 |r| 阈值下该网络没有负相关边")
@@ -1183,7 +1183,7 @@ md_network <- function(CFG) {
 # local80_ 辅助函数（分析）
 # =============================================================================
 
-#' 门配色（源：5_network_structure.R:184-198）
+#' 门配色
 local80_phylum_colors <- function(all_phyla) {
   n <- length(all_phyla)
   if (n == 0) return(stats::setNames(character(0), character(0)))
@@ -1236,7 +1236,7 @@ local80_nodes_table <- function(g, cent_df, zi_pi_df, tax_filt, deg_raw) {
   out
 }
 
-#' 全局拓扑汇总（源：5_network_structure.R:1078-1098）
+#' 全局拓扑汇总
 local80_global_topo <- function(g, modularity_global, n_modules_global) {
   avg_path <- tryCatch(igraph::mean_distance(g, directed = FALSE),
                        error = function(e) NA_real_)
@@ -1255,7 +1255,7 @@ local80_global_topo <- function(g, modularity_global, n_modules_global) {
     stringsAsFactors = FALSE)
 }
 
-#' KW 检验 + BH（源：5_network_structure.R:527-581）
+#' KW 检验 + BH
 local80_kw <- function(CFG, long_df, metrics_vec, factors) {
   rows <- list()
   for (f in factors) {
@@ -1283,7 +1283,7 @@ local80_kw <- function(CFG, long_df, metrics_vec, factors) {
   out
 }
 
-#' PERMANOVA（源：5_network_structure.R:583-604，欧氏距离 + adonis2 置换）
+#' PERMANOVA
 #' 置换次数走 `CFG$network$permutations` -> `CFG$beta_tests$permutations` -> 999。
 local80_permanova <- function(CFG, sample_metrics, metrics_main, factors) {
   n_perm <- as.integer(CFG$network$permutations %||%
@@ -1322,7 +1322,7 @@ local80_permanova <- function(CFG, sample_metrics, metrics_main, factors) {
   cbind(res[, first, drop = FALSE], res[, setdiff(names(res), first), drop = FALSE])
 }
 
-#' 分组网络 + 拓扑（源：5_network_structure.R:928-985）
+#' 分组网络 + 拓扑
 local80_group_networks <- function(CFG, otu_filt, meta, group_factors,
                                    min_cor, min_prev) {
   nets <- list(); topo <- list(); ns <- integer(0); labs <- character(0)
@@ -1346,7 +1346,7 @@ local80_group_networks <- function(CFG, otu_filt, meta, group_factors,
   list(nets = nets, topo = tp, ns = ns, labels = labs)
 }
 
-#' 丰富/稀有亚网络（源：5_network_structure.R:1952-1990 与 2200-2246）
+#' 丰富/稀有亚网络
 #' @param sub_by CFG$network$sub_network_by；只实现 "abundance_rank"（2x2 四象限，
 #'   原文口径）。其它取值原脚本没有对应实现 —— 直接在表里说明并降级，不猜语义。
 local80_abundant_rare <- function(CFG, otu_filt, meta, smp, cells, sub_by,
@@ -1411,7 +1411,7 @@ local80_abundant_rare <- function(CFG, otu_filt, meta, smp, cells, sub_by,
        gkey = "abundance_rank")
 }
 
-#' 亚网络拓扑（源：5_network_structure.R:1931-1950 的 calc_topo）
+#' 亚网络拓扑
 local80_calc_topo <- function(g, xv, cl) {
   if (is.null(g) || igraph::vcount(g) < 2) {
     return(data.frame(Vegetation = xv, Cell = cl, Nodes = 0, Edges = 0,
@@ -1440,7 +1440,7 @@ local80_calc_topo <- function(g, xv, cl) {
     stringsAsFactors = FALSE)
 }
 
-#' 节点周转（源：5_network_structure.R:2261-2348）
+#' 节点周转
 local80_turnover <- function(CFG, otu_filt, meta, smp, cells, turnover_by,
                              group_factors, min_cor, min_prev) {
   f <- turnover_by %||% (group_factors[2] %||% (CFG$design$factors %||% character(0))[2])
@@ -1538,7 +1538,7 @@ local80_jaccard_df <- function(m) {
   d
 }
 
-#' bootstrap 均衡后的组均值 ± 95% CI（源：5_network_structure.R:413-469）
+#' bootstrap 均衡后的组均值 ± 95% CI
 local80_bootstrap <- function(sample_metrics, factors, metrics_main, n_boot) {
   if (length(factors) == 0 || length(metrics_main) == 0) return(NULL)
   rows <- list()
@@ -1593,7 +1593,7 @@ local80_reorder_metric <- function(df, metrics, labels) {
 # local80_ 辅助函数（出图）
 # =============================================================================
 
-#' 图 1-A：betweenness top-N 条形（源：5_network_structure.R:710-722 + 1369-1388）
+#' 图 1-A：betweenness top-N 条形
 local80_plot_betweenness <- function(CFG, nodes_tbl, phylo_colors, st, pt) {
   top_n <- as.integer(st$top_betweenness %||% 20L)
   d <- nodes_tbl[order(-nodes_tbl$betweenness), , drop = FALSE]
@@ -1625,7 +1625,7 @@ local80_plot_betweenness <- function(CFG, nodes_tbl, phylo_colors, st, pt) {
                                                       size = pt$title))
 }
 
-#' 图 1-B：节点度 vs 平均相对丰度（源：5_network_structure.R:1390-1410）
+#' 图 1-B：节点度 vs 平均相对丰度
 #' 原文的 ggpubr::stat_cor() 换成本地 Pearson r / p 注释（同样的数值，纯 ASCII）
 local80_plot_degree_abund <- function(CFG, otu_filt, kept_asv, g_global, tax_filt,
                                       phylo_colors, pt) {
@@ -1679,7 +1679,7 @@ local80_plot_degree_abund <- function(CFG, otu_filt, kept_asv, g_global, tax_fil
     ggplot2::guides(colour = md_guide_flex(length(phylo_colors), "bottom"))
 }
 
-#' 图 1-C：Zi-Pi 四区散点（源：5_network_structure.R:1681-1713）
+#' 图 1-C：Zi-Pi 四区散点
 local80_plot_zipi <- function(CFG, zi_pi_df, pt, zi_thr, pi_thr) {
   d <- zi_pi_df[is.finite(zi_pi_df$Zi) & is.finite(zi_pi_df$Pi), , drop = FALSE]
   if (nrow(d) < 3) return(md_empty_plot(CFG, "Zi-Pi unavailable"))
@@ -1767,7 +1767,7 @@ local80_panel_global <- function(CFG, g_global, st, phylum_of, phylo_colors, pt)
 
 #' 图 4-B：分组网络 2x4（每个网络一张 ggplot 面板拼成）
 #' @param ncol 每行几个网络（原图 2 行 x 4 列）
-#' @param tag  子面板标签（原图 Fig5c 的 8 个网络均无独立标签，默认 NULL）
+#' @param tag  子面板标签（原图 8 个网络均无独立标签，默认 NULL）
 local80_panel_groups <- function(CFG, nets, labels, ns, st, phylum_of,
                                  phylo_colors, ncol = NULL, tag = NULL) {
   keys <- names(nets)
@@ -1789,14 +1789,14 @@ local80_panel_groups <- function(CFG, nets, labels, ns, st, phylum_of,
   patchwork::wrap_plots(plist, ncol = ncol)
 }
 
-#' 图 4-C：观测 vs 随机网络（源：5_network_structure.R:1741-1757）
+#' 图 4-C：观测 vs 随机网络
 local80_panel_random <- function(CFG, comparison_df, random_n, pt) {
   if (is.null(comparison_df) || nrow(comparison_df) == 0)
     return(md_empty_plot(CFG, "Random comparison unavailable"))
   d <- comparison_df
   # 原脚本把 NaN（Rand_SD = 0 的确定性零模型，如 fixed n/m 的 Avg Degree 与
   # Density）经 case_when 落进 "Not significant" —— 这里**保持同一文案与色值**
-  # （`MD_NET$random_cols` 逐字照抄 5_network_structure.R:1750-1752），
+  # （`MD_NET$random_cols` 沿用同一套样式），
   # 但把"哪些度量的 Z 检验退化"显式写进 Note sheet，不让读者把它误读成"检验过、不显著"。
   d$Interpretation[is.na(d$Interpretation)] <- "Not significant"
   d$Metric <- factor(d$Metric,
@@ -1825,7 +1825,7 @@ local80_panel_random <- function(CFG, comparison_df, random_n, pt) {
                                                          colour = "grey40"))
 }
 
-#' 图 4-D：节点周转 Sankey（源：5_network_structure.R:2321-2376）
+#' 图 4-D：节点周转 Sankey
 local80_panel_sankey <- function(CFG, turnover, pt) {
   sk <- turnover$sankey
   if (is.null(sk) || nrow(sk) == 0 ||
@@ -1853,7 +1853,7 @@ local80_panel_sankey <- function(CFG, turnover, pt) {
                                                       size = pt$title))
 }
 
-#' 图 4-E：丰富/稀有亚网络指标对比（源：5_network_structure.R:2200-2246）
+#' 图 4-E：丰富/稀有亚网络指标对比
 local80_panel_abundant_rare <- function(CFG, abr, pt) {
   long <- abr$grid
   if (is.null(long) || nrow(long) == 0)

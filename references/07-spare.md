@@ -64,8 +64,8 @@ CFG$spare$std_beta <- list(
 | `assembly$chunk` | `CFG$assembly` | `NULL` | 未做 | 零模型分块（内存控制，**不改变统计口径**） |
 | `distances$metrics` | `CFG$distances` | bray+jaccard+wunifrac | 同样三种 | 距离口径集合，按需增删 |
 | `filter$taxon_subset` | `CFG$filter` | `NULL` | Cluster IV 过滤 | 通用化的**类群子集过滤**机制（你论文的 Cluster IV 过滤就是它的一个实例） |
-| `composition$indicator$enabled` | `CFG$composition` | `FALSE` | 未做（毕业论文做过） | 指示种 IndVal 面板（2026 补充轮） |
-| `env$rf$enabled` | `CFG$env` | `FALSE` | 未做（毕业论文做过） | 随机森林重要性面板（2026 补充轮） |
+| `composition$indicator$enabled` | `CFG$composition` | `FALSE` | 未做（原实现） | 指示种 IndVal 面板（2026 补充轮） |
+| `env$rf$enabled` | `CFG$env` | `FALSE` | 未做（原实现） | 随机森林重要性面板（2026 补充轮） |
 | `response_models$pattern_test` | `CFG$response_models` | `"kruskal_dunn"` | `kruskal_dunn` | 可切 `"scheirer_ray_hare"`（2026 补充轮） |
 | `response_models$linkage` | `CFG$response_models` | alpha+ordination+pairwise | 同样三项 | 可加 `"procrustes"` / `"rf"`（2026 补充轮） |
 
@@ -77,7 +77,7 @@ CFG$spare$std_beta <- list(
 
 | 模块 | 内容 | 状态 |
 |---|---|---|
-| ~~`42_constrained_ord`~~ | RDA / CCA / db-RDA + envfit | **已被 `44_constrained_ord` 取代**（按毕业论文 `3_environmental_drivers.R:855-1000` 的 db-RDA 样式重写，不再是自编版）。旧文件归档在**包外**构建记录 `analysis-packages/_build-notes/micro-div-pipeline/removed-code/42_constrained_ord.R`，仅作追溯（随本包单独分发时不存在）；`44` 与它的区别：支持 `community`/`distance` 两种响应侧、`method` 可选 dbrda/rda/cca/capscale、VIF 阈值跟原脚本用 15、箭头长度按站点云半径自动归一。 |
+| ~~`42_constrained_ord`~~ | RDA / CCA / db-RDA + envfit | **已被 `44_constrained_ord` 取代**（按原实现 的 db-RDA 样式重写，不再是自编版）。旧文件归档在**包外**构建记录 `analysis-packages/_build-notes/micro-div-pipeline/removed-code/42_constrained_ord.R`，仅作追溯（随本包单独分发时不存在）；`44` 与它的区别：支持 `community`/`distance` 两种响应侧、`method` 可选 dbrda/rda/cca/capscale、VIF 阈值跟原脚本用 15、箭头长度按站点云半径自动归一。 |
 
 ---
 

@@ -35,7 +35,7 @@ CFG$design$replicate_var <- NULL
 
 # ---- 过滤 / 标准化 ----
 CFG$filter$min_asv_reads    <- 10
-# 【示范数据说明】这批 nifH 数据极端单例化（23,251/23,873 个 ASV 只出现 1 次），
+# 【示范数据说明】这批 nifH 数据极端单例化（绝大多数 ASV 只出现 1 次），
 # ASV 级出现率过滤会直接砍掉大半数据；论文原流程用的是 reads>=10 + 类群子集过滤，
 # 没有做出现率过滤。因此示范配置里把出现率下限设为 1。
 # 换成 16S/ITS 等常见数据时，这里通常应设为 2（可在 references/02-params.md 查推荐）。
@@ -46,7 +46,7 @@ CFG$filter$taxon_subset     <- NULL
 CFG$normalize$method <- "rarefy"
 CFG$normalize$depth  <- NULL          # NULL = 最小正样本 reads
 
-# ---- 响应变量（示范数据里是生态系统功能 EF，原 nifH 的 ARA）----
+# ---- 响应变量（示范数据里是生态系统功能 EF，原实现 ARA）----
 CFG$response <- list(
   enabled = TRUE, var = "EF", label = "Ecosystem function",
   unit = "pmol C2H4 g-1 h-1", trans = "none"
@@ -116,7 +116,7 @@ CFG$sem$dsep      <- TRUE
 CFG$sem$p_adjust  <- "BH"
 
 # ---- 敏感性分析（53）：示范数据里剔掉一个分区看结论稳不稳 ----
-# 原 nifH 论文做过「剔南沙（人工岛）」；示范数据不含 Nansha，这里改成剔 Xisha（最远的岛群）。
+# 原 原始研究做过「剔南沙（人工岛）」；示范数据不含 Nansha，这里改成剔 Xisha（最远的岛群）。
 CFG$sensitivity <- list(
   enabled      = TRUE,
   drop_levels  = list(Zone = "Xisha"),
@@ -143,7 +143,7 @@ CFG$response_models$ordination_axes <- c("PCoA1")
 CFG$response_models$pair_metric     <- "bray"
 
 # =============================================================================
-# 2026 毕业论文补充轮：7 个新模块（**示范配置全部打开**）
+# 2026 补充轮：7 个新模块（**示范配置全部打开**）
 # =============================================================================
 # 注意：往已有模块里"加面板"的四项增量（composition$indicator / env$rf /
 # response_models$pattern_test = scheirer_ray_hare / linkage 加 procrustes+rf）
@@ -157,7 +157,7 @@ CFG$niche$level      <- "both"
 CFG$niche$input      <- "raw"          # 未抽平（原脚本用 ps_rare）
 CFG$niche$thr_abund  <- 0.1
 CFG$niche$thr_prev   <- 10
-# NULL = 前两个设计因子的交互组（Zone×Vegetation），与原图 Fig1c 的 x 轴一致
+# NULL = 前两个设计因子的交互组（设计因子交互），与原图 x 轴一致
 CFG$niche$groups     <- NULL
 
 # ---- 44 约束排序（db-RDA）----
@@ -230,7 +230,7 @@ CFG$figure$width_double  <- 183
 CFG$figure$base_pt       <- 9
 CFG$figure$cjk_font      <- NULL      # 示范包只出英文，避免无中文字体环境报错
 CFG$figure$save_singles  <- FALSE
-# 配色**不再自造** —— 用 12_plot_theme.R 里逐字照搬 nifH 的内置色板：
+# 配色**不再自造** —— 用 12_plot_theme.R 里逐字照搬 原实现内置色板：
 #   zone = #89C4D7 / #4DAFB5 / #2B6AA0 / #3B2C6B
 #   veg  = #989898 / #959BB0 / #60859E / #B98079
 # 需要覆盖时再显式写 CFG$figure$palette$Zone <- c(...)
@@ -243,7 +243,7 @@ CFG$figure$save_singles  <- FALSE
 # 想把总数压到 26 张，把 CFG$network$metrics_supp_figure 设为 FALSE。
 CFG$figure$skip_modules <- c("01", "05", "13", "15", "22")
 
-# 箱线图样式：默认完全复刻 nifH 的 plot_dual_factor_panel（空心箱 + 第二因子上色 +
+# 箱线图样式：默认完全复刻 原实现 plot_dual_factor_panel（空心箱 + 第二因子上色 +
 # 字母在 max*1.08 + KW 注释 + y 从 0 起 + 刻度朝内 + 不标样本量）
 CFG$plot$box <- list(
   style          = "nifh",

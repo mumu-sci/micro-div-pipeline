@@ -262,7 +262,7 @@ md_fmt_p <- function(p, digits = 3) {
                        formatC(p, format = "f", digits = digits))))
 }
 
-#' **图内用**的 P 值文案（纯 ASCII）—— 对应 nifH `11_shared.R::fmt_p()`
+#' **图内用**的 P 值文案（纯 ASCII）—— 对应 nifH 原脚本
 #'
 #' 与 `md_fmt_p()` 的区别（`md_fmt_p` 是给结果表用的，含非 ASCII 破折号且无前缀）：
 #'  - NA → `"NA"`（不是 U+2014 破折号，否则图会被 95 的 ASCII 审计判 FAIL）

@@ -1,7 +1,7 @@
 # =============================================================================
 # R/83_taxon_diff.R ---- 模块 83：差异类群（CLR + Kruskal-Wallis + Dunn + Cliff's delta）
 # -----------------------------------------------------------------------------
-# 源：毕业论文 S4_supplementary_taxa.R:690-1100（原 9_differential_analysis.R）
+# 参考实现（原脚本）
 #     契约见 _build-notes/micro-div-pipeline/ROUND5_MODULE_SPEC.md
 #
 # 导出：md_taxon_diff(CFG)
@@ -477,7 +477,7 @@ md_taxon_diff <- function(CFG) {
     names(dunn_out)[names(dunn_out) == ".y."] <- "Response"
 
   note_df <- data.frame(Note = c(
-    "口径源：毕业论文 S4_supplementary_taxa.R:690-1100（原 9_differential_analysis.R）。",
+    "口径参考实现（原脚本）。",
     sprintf("层级 = %s；CLR = %s（伪计数 %s，NULL = 最小正值的 1/2）；调整方法 = %s。",
             td_rank_used, as.character(td_clr),
             if (is.null(td_pc)) "auto (min positive / 2)" else as.character(td_pc),

@@ -1,7 +1,7 @@
 # =============================================================================
 # R/81_taxon_group.R ---- 模块 81：通用类群分组（组成 / 网络角色 / 功能关联）
 # -----------------------------------------------------------------------------
-# 源：毕业论文 6_ecological_guilds.R（1492 行）
+# 参考实现（1492 行）
 #   参考段落：84-130（映射表构造）、1239-1333（组成与网络角色绘图段）、
 #             1460-1472（出图规格：heights = c(1, 1.2)）
 #
@@ -538,7 +538,7 @@ md_taxon_group <- function(CFG) {
               "Mean per-sample relative abundance (%) of each group, by sample grouping factor",
               "Fisher exact test on observed within-group vs between-group edges against a random-wiring expectation built from the node group frequencies",
               paste0("The hard-coded diazotroph genus -> Symbiotic/Associative/Free-living table ",
-                     "of 6_ecological_guilds.R:102-268 was REMOVED; grouping now comes entirely ",
+                     "of 原脚本 was REMOVED; grouping now comes entirely ",
                      "from the user-supplied mapping table. Group meaning is arbitrary ",
                      "(functional guild / niche / R-K strategy / any custom scheme).")),
     stringsAsFactors = FALSE)

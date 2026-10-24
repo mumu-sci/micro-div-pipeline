@@ -111,10 +111,10 @@ CFG <- list(
   # ---------------------------------------------------------------------------
   normalize = list(
     # 【默认 rarefy】rarefy(抽平到统一深度) | relative(相对丰度) | css(累积和标度) | none(不处理) | subsample_avg(多次亚抽样取均值)
-    #  【推荐】多样性指数与距离用 rarefy（与 nifH 论文口径一致、可复现）；
+    #  【推荐】多样性指数与距离用 rarefy（与 原始研究口径一致、可复现）；
     #         组成堆叠图与稀释曲线用 none/relative（保留全部 reads，图形更平滑）
     method = "rarefy",
-    # 【默认 NULL】NULL = 最小正样本 reads（与 nifH 论文一致）| 也可显式给整数
+    # 【默认 NULL】NULL = 最小正样本 reads（与 原始研究一致）| 也可显式给整数
     #  【推荐】NULL；但必须在结果表脚注写明实际深度。ITS 因长度变异大，常需显式指定
     depth = NULL,
     subsample_reps = 20,      # method = "subsample_avg" 时的重复次数
@@ -271,7 +271,7 @@ CFG <- list(
     vpa_p_adjust = "holm",
     # ---- 随机森林变量重要性（模块 40 的 D 面板；**默认关**）----
     # 通用化：response 可以是任意连续列，predictors 可以是任意解释变量集 ——
-    # 不限于"环境 → 群落"。毕业论文 Fig3b-B 用的是 ranger + permutation importance。
+    # 不限于"环境 → 群落"。原图 用的是 ranger + permutation importance。
     rf = list(
       enabled = FALSE,           # 【默认 FALSE】打开后 40 号多一个 D 面板 + RF_importance 表
       response = "Shannon",      # 任意连续列（α 指数 / 排序轴 / 环境量 / 响应变量）
@@ -384,7 +384,7 @@ CFG <- list(
   response_models = list(
     # 响应变量的因子格局检验方法：
     #   【默认 kruskal_dunn】单因子 KW + Dunn + CLD 字母
-    #   scheirer_ray_hare = 双因子非参数交互检验（源：毕业论文 8_ARA_function.R §2）；
+    #   scheirer_ray_hare = 双因子非参数交互检验；
     #     需要 rcompanion；缺包时回退到 ART + 双因素 ANOVA。
     #   ⚠ 换口径会改变 70 号图上的 P 值与字母，必须事前与用户确认（硬门）。
     pattern_test = "kruskal_dunn",
@@ -392,8 +392,8 @@ CFG <- list(
     #   alpha      响应 vs α 多样性（单回归 + 偏回归 + LMM/GAMM）
     #   ordination 响应 vs 排序轴的条件效应
     #   pairwise   成对级 |Δ响应| vs 群落距离（MRM/Mantel + bootstrap）
-    #   procrustes 群落排序 vs 响应/环境排序的 Procrustes（源：8_ARA_function.R §D）
-    #   rf         群落组成 -> 响应的随机森林重要性（源：8_ARA_function.R §D）
+    #   procrustes 群落排序 vs 响应/环境排序的 Procrustes
+    #   rf         群落组成 -> 响应的随机森林重要性
     linkage = c("alpha", "ordination", "pairwise"),
     alpha_focus = c("Shannon", "PD"),
     ordination_axes = c("PCoA1"),    # 用哪个排序轴做条件效应
@@ -402,7 +402,7 @@ CFG <- list(
     # Procrustes（linkage 含 "procrustes" 时生效）
     procrustes = list(axes = 5, permutations = 999),
     # 群落 -> 响应的随机森林（linkage 含 "rf" 时生效）
-    #   源：毕业论文 8_ARA_function.R:1299-1360
+    #   参考实现
     #   特征 = PCoA 前 k 轴 + 某一分类层级的相对丰度
     rf = list(engine = "randomForest", num_trees = 3000, importance = "permutation",
               pcoa_axes = 5, rank = "Phylum", top_n = 15)
@@ -427,7 +427,7 @@ CFG <- list(
     freq_t      = 10,         # 四象限：出现率阈值（%）
     cell_colors = NULL,       # 四象限配色；NULL = 内置 quadrant 板（= nifH cols_2x2）
     # ---- 指示种 IndVal（模块 10 的 D 面板；**默认关**）----
-    # 源：毕业论文 S4_supplementary_taxa.R §1（indicspecies::multipatt）
+    # 参考实现（indicspecies::multipatt）
     # 通用化：按 design$factors 里声明的因子逐列出一张 lollipop（Top-N）。
     indicator = list(
       enabled  = FALSE,       # 【默认 FALSE】开启后 10 号多一个 D 面板 + Indicator_species 表
@@ -444,7 +444,7 @@ CFG <- list(
 
   # ---------------------------------------------------------------------------
   # 生态位宽度与稀有性（模块 12）
-  #   源：毕业论文 1_community_composition.R §7（原 6_niche_rarity.R）
+  #   参考实现（原脚本）
   # ---------------------------------------------------------------------------
   niche = list(
     enabled = TRUE,
@@ -461,22 +461,22 @@ CFG <- list(
     sensitivity_occ   = c(0.1, 0.3, 0.5, 0.7, 0.9),
     sensitivity_abund = c(0.0001, 0.001, 0.01),
     # 样本级策略组成的横轴分组：
-    #   NULL（推荐）= **前两个设计因子的交互组**（毕业论文 Fig1c 原图就是 Zone×Vegetation），
+    #   NULL（推荐）= **前两个设计因子的交互组**（原实现），
     #                 顺序为「第一因子为主序、第二因子为次序」
     #   给字符串     = 强制单因子（例如 "Zone"）
     groups = NULL,
     style = list(
       point_size = 0.4, point_alpha = 0.5,
-      # A 面板（交互堆叠柱）的黑边与透明度 —— 逐字照抄 1_community_composition.R:701
+      # A 面板（交互堆叠柱）的黑边与透明度 —— 沿用同一套样式
       inter_alpha = 0.85, inter_lw = 0.3,
-      # C 面板的 gam 平滑 —— 逐字照抄 1_community_composition.R:873-874
+      # C 面板的 gam 平滑 —— 沿用同一套样式
       gam = list(method = "gam", bs = "cs", colour = "#D55E00", lw = 0.6, alpha = 0.15)
     )
   ),
 
   # ---------------------------------------------------------------------------
   # 约束排序 db-RDA / RDA / CCA / capscale（模块 44）
-  #   源：毕业论文 3_environmental_drivers.R:855-928（Fig3b-A 的 db-RDA triplot）
+  #   参考实现（原图 db-RDA triplot）
   # ---------------------------------------------------------------------------
   constrained_ord = list(
     enabled = TRUE,
@@ -499,7 +499,7 @@ CFG <- list(
 
   # ---------------------------------------------------------------------------
   # GAM / GAMM 响应曲线（模块 45）
-  #   源：毕业论文 3_environmental_drivers.R:1261-1345（Fig3b-C 的 GAM 响应）
+  #   参考实现（原图 GAM 响应）
   #   通用化：**因变量不必是群落** —— 任意连续列都行
   # ---------------------------------------------------------------------------
   response_curves = list(
@@ -514,7 +514,7 @@ CFG <- list(
     random = NULL,            # 例如 "(1|Site)"；给出且 engine = "gam" 时自动升 GAMM
     grid_n = 100,             # 预测网格点数（原脚本 100）
     edf_nonlin = 1.1,         # edf 大于该值才算非线性
-    # 【默认 0.1】只画 P 小于该值的平滑项（原脚本 3_environmental_drivers.R:1320 口径）；
+    # 【默认 0.1】只画 P 小于该值的平滑项（原脚本 口径）；
     #   一个都没通过时**按原脚本不画曲线**，图里只给一句说明 + 表里列出全部 P。
     p_max = 0.1,
     # 【默认 3】最多画几个变量 —— 原脚本用随机森林的前 3 个
@@ -530,7 +530,7 @@ CFG <- list(
   ),
 
   # ---------------------------------------------------------------------------
-  # 共现网络（模块 80）—— 源：毕业论文 5_network_structure.R（Fig5a-e + FigS7）
+  # 共现网络（模块 80）—— 参考实现（原图 + 附图）
   #   ⚠ 本模块会出 **4 张图**（节点属性 / 指标主图 / 指标附图 / 拓扑合图）
   # ---------------------------------------------------------------------------
   network = list(
@@ -553,26 +553,26 @@ CFG <- list(
     robustness_nsim = 30,     # 网络韧性模拟次数（原脚本 30）
     n_boot = 1000,            # 分组网络指标 bootstrap 均衡次数（原脚本 1000）
     permutations = 999,       # 样本级网络指标的 PERMANOVA 置换次数（原脚本 999）
-    # 主图（原 Fig5b）与附图（原 FigS7）各 6 个指标；值 = 样本级指标列名
-    #   逐字照抄毕业论文 5_network_structure.R:1443-1448 的 metric_order_main / _supp
+    # 主图与附图（原 附图）各 6 个指标；值 = 样本级指标列名
+    #   沿用同一套样式 的 metric_order_main / _supp
     metrics_main = c("N_DetectedASV", "MeanNodeDegree", "MeanEigen",
                      "SubAvgPath", "SubNModules", "Robustness"),
     metrics_supp = c("SumNodeDegree", "SubDensity", "SubClustering",
                      "SubConnectedness", "SubModularity", "Cohesion_pos"),
-    # 【默认 TRUE】附图（原 FigS7）是否出图；设 FALSE 可把总图数从 29 压到 26
+    # 【默认 TRUE】附图（原 附图）是否出图；设 FALSE 可把总图数从 29 压到 26
     metrics_supp_figure = TRUE,
-    # 分组网络（原 Fig5c）：用 design$factors 里的哪几个因子；NULL = 前 2 个
+    # 分组网络：用 design$factors 里的哪几个因子；NULL = 前 2 个
     group_factors = NULL,
-    # 丰富/稀有亚网络（原 Fig5e）：用哪一列作为"细胞类型"分组
+    # 丰富/稀有亚网络：用哪一列作为"细胞类型"分组
     #   abundance_rank = 按 mean_abund × occurrence 的 2x2 四象限（原脚本口径）
     sub_network_by = "abundance_rank",
-    # 节点周转 Sankey（原 Fig5d-C）按哪个因子的相邻水平对比较；NULL = 第二个因子
+    # 节点周转 Sankey按哪个因子的相邻水平对比较；NULL = 第二个因子
     turnover_by = NULL,
     style = list(
       layout = "graphopt",    # 全局网络布局：graphopt（推荐，原脚本）| fr | nicely | circle
       layout_group = "fr",    # 分组网络布局：fr（原脚本，niter = 5000）| graphopt | nicely
       # 节点属性图（80d）版式：FALSE（默认）= 183 mm 宽三格纵向，与全包其余图同字号观感；
-      #                          TRUE = 复刻原文 Fig5a 的 533.4 x 177.8 mm 单排
+      #                          TRUE = 复刻原文 原图 533.4 x 177.8 mm 单排
       wide_layout = FALSE,
       node_size = 1.6, node_size_hub = 2.6, edge_width = 0.18, edge_alpha = 0.45,
       node_alpha = 0.75, label_size_pt = 5, top_betweenness = 20
@@ -580,7 +580,7 @@ CFG <- list(
   ),
 
   # ---------------------------------------------------------------------------
-  # 通用类群分组（模块 81）—— 源：毕业论文 6_ecological_guilds.R
+  # 通用类群分组（模块 81）—— 参考实现
   #   分组含义不限：功能群 / 生态位 / R-K 对策 / 任意自定义。
   #   映射表 = data/05_taxon_group.csv（两列 taxon, group）；不提供则本模块跳过。
   # ---------------------------------------------------------------------------
@@ -600,7 +600,7 @@ CFG <- list(
   ),
 
   # ---------------------------------------------------------------------------
-  # 类群共享 UpSet（模块 82）—— 源：毕业论文 S4_supplementary_taxa.R §2
+  # 类群共享 UpSet（模块 82）—— 参考实现
   # ---------------------------------------------------------------------------
   taxon_share = list(
     enabled = TRUE,
@@ -615,7 +615,7 @@ CFG <- list(
   ),
 
   # ---------------------------------------------------------------------------
-  # 差异类群热图（模块 83）—— 源：毕业论文 S4_supplementary_taxa.R §3
+  # 差异类群热图（模块 83）—— 参考实现
   # ---------------------------------------------------------------------------
   taxon_diff = list(
     enabled = TRUE,
@@ -672,7 +672,7 @@ CFG <- list(
       Zone       = NULL,
       Vegetation = NULL,
       group      = NULL,
-      # 地形高程渐变（地图用）；NULL = 内置 value，= nifH 07_S1_study_area_map.R §4 的两色
+      # 地形高程渐变（地图用）；NULL = 内置 value，= nifH 原实现两色
       dem        = NULL,
       diverging  = c("#2166AC", "#F5F5F5", "#B2182B"),
       sequential = c("#F7FBFF", "#4292C6", "#08306B"),
@@ -682,7 +682,7 @@ CFG <- list(
   ),
 
   # ---------------------------------------------------------------------------
-  # 箱线图样式（默认完全复刻 nifH 的 plot_dual_factor_panel；换论文时逐项改）
+  # 箱线图样式（默认完全复刻 原实现 plot_dual_factor_panel；换论文时逐项改）
   # ---------------------------------------------------------------------------
   plot = list(
     box = list(
@@ -691,7 +691,7 @@ CFG <- list(
       # 以后写论文不想要字母就设 FALSE —— 只影响出图，字母本身仍写在 Descriptive 表里。
       letters        = TRUE,
       # 【默认 auto】auto(双因子用第二因子，单因子用第一因子) | f1 | f2 | none
-      #   nifH 的做法是"用第二因子给箱体边框与抖动点上色"；
+      #   原实现做法是"用第二因子给箱体边框与抖动点上色"；
       #   如果你的设计不是双因子、或想统一上色，改成 "f1" 或 "none"
       color_by       = "auto",
       fill           = NA,       # NA = 空心箱体（nifH 口径）；给颜色则填充

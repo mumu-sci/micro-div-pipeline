@@ -35,7 +35,7 @@
 
 示例：
 ```csv
-asv_id,QH1-L,QH1-H,QH1-M,XW1-L
+asv_id,S01-L,S01-H,S01-M,S02-L
 ASV0001,1532,88,4,990
 ASV0002,0,421,77,0
 ```
@@ -88,8 +88,8 @@ tax[ranks] <- do.call(rbind, lapply(sp, function(x) {
 示例：
 ```csv
 sample_id,Site,Zone,Vegetation,Replicate
-QH1-L,QH,Bare,Coastal,1
-QH1-H,QH,Herb,Coastal,1
+S01-L,QH,Bare,Coastal,1
+S01-H,QH,Herb,Coastal,1
 ```
 
 **注意**
@@ -112,7 +112,7 @@ QH1-H,QH,Herb,Coastal,1
 示例：
 ```csv
 sample_id,Latitude,Longitude,MAT,MAP,pH,SWC,EF
-QH1-L,20.25,109.93,24.1,1646,7.69,0.127,14.62
+S01-L,20.25,109.93,24.1,1646,7.69,0.127,14.62
 ```
 
 **响应变量是什么？** 任何"你想解释的生态系统/过程量"，例如：酶活、生产力、呼吸速率、
@@ -170,7 +170,7 @@ nifH 常按共生/联合/自生），而且同一篇论文也可能同时想看�
 | 对象 | 规范 | 示例 |
 |---|---|---|
 | ASV/OTU 标识 | 字母数字 + 下划线，全局唯一，**不要含逗号/引号/空格** | `ASV0001` |
-| 样本标识 | 字母数字 + `-` / `_` / `.`，全局唯一，**不要含逗号/空格** | `QH1-L` |
+| 样本标识 | 字母数字 + `-` / `_` / `.`，全局唯一，**不要含逗号/空格** | `S01-L` |
 | 因子水平 | 短字符串，**不要含 `_` 与 `|`**（`_` 会被用于交互标签拼接） | `Coastal` `Bare` |
 | 环境变量 | 短字符串，与 `config$env$vars` 一致 | `MAT` `pH` `SWC` |
 | 响应变量 | 一列，短字符串 | `EF` |

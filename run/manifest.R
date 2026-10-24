@@ -2,7 +2,7 @@
 # run/manifest.R —— 单一模块清单（**唯一真身**）
 # -----------------------------------------------------------------------------
 # 90_run_all.R 与 91_regenerate_figures.R 都由本清单生成，不再各写一份
-# （nifH 论文的 _run_all.R 与 _regenerate_figures.R 各复制了一份清单，后来漂移了）。
+# （原始研究的 _run_all.R 与 _regenerate_figures.R 各复制了一份清单，后来漂移了）。
 #
 # 每个条目：
 #   id      模块号（同时也是文件名前缀与输出前缀）
@@ -25,8 +25,8 @@ MD_MANIFEST <- list(
        after = "05",                heavy = FALSE, needs = c("phyloseq")),
   list(id = "11", file = "11_alpha.R",              fun = "md_alpha",
        after = "05",                heavy = FALSE, needs = c("phyloseq", "ecology")),
-  # 12 = 2026 毕业论文补充轮新增：生态位宽度（Levins' B）与生态策略组成
-  #      源：1_community_composition.R §7（原 6_niche_rarity.R）
+  # 12 = 2026 补充轮新增：生态位宽度（Levins' B）与生态策略组成
+  #      参考实现（原脚本）
   list(id = "12", file = "12_niche_breadth.R",      fun = "md_niche_breadth",
        after = "05",                heavy = FALSE, needs = c("phyloseq")),
   list(id = "13", file = "13_distances.R",          fun = "md_distances",
@@ -62,12 +62,12 @@ MD_MANIFEST <- list(
   list(id = "40", file = "40_env_summary.R",        fun = "md_env_summary",
        after = "05",                heavy = FALSE, needs = c("ecology")),
   # 注：原 42_constrained_ord（RDA/CCA/db-RDA）已移出管线 —— 那是**本包自行扩展**的能力，
-  #     nifH 论文里没有做约束排序。文件归档在 _build-notes/micro-div-pipeline/removed-code/。
+  #     原始研究里没有做约束排序。文件归档在 _build-notes/micro-div-pipeline/removed-code/。
   list(id = "43", file = "43_mantel_mrm.R",         fun = "md_mantel_mrm",
        after = "13",                heavy = FALSE, needs = c("mantel")),
-  # 44 / 45 = 2026 毕业论文补充轮新增
-  #   44 约束排序（db-RDA / RDA / CCA / capscale）—— 源：3_environmental_drivers.R:855-928
-  #   45 GAM / GAMM 响应曲线                —— 源：3_environmental_drivers.R:1261-1345
+  # 44 / 45 = 2026 补充轮新增
+  #   44 约束排序（db-RDA / RDA / CCA / capscale）—— 参考实现
+  #   45 GAM / GAMM 响应曲线                —— 参考实现
   list(id = "44", file = "44_constrained_ord.R",    fun = "md_constrained_ord",
        after = "05",                heavy = FALSE, needs = c("ecology")),
   list(id = "45", file = "45_response_curves.R",    fun = "md_response_curves",
@@ -93,11 +93,11 @@ MD_MANIFEST <- list(
   list(id = "71", file = "71_response_linkage.R",   fun = "md_response_linkage",
        after = c("13", "40"),       heavy = FALSE, needs = c("model", "mantel")),
 
-  # ---- 网络与类群补充（2026 毕业论文补充轮）----
-  #   80 共现网络（含丰富/稀有亚网络）—— 源：5_network_structure.R
-  #   81 通用类群分组（组成 / 网络角色 / 功能关联 / 跨组边）—— 源：6_ecological_guilds.R
-  #   82 ASV/类群共享 UpSet                       —— 源：S4_supplementary_taxa.R §2
-  #   83 差异类群热图（CLR + KW + Dunn + Cliff's delta）—— 源：S4_supplementary_taxa.R §3
+  # ---- 网络与类群补充（2026 补充轮）----
+  #   80 共现网络（含丰富/稀有亚网络）—— 参考实现
+  #   81 通用类群分组（组成 / 网络角色 / 功能关联 / 跨组边）—— 参考实现
+  #   82 ASV/类群共享 UpSet                       —— 参考实现
+  #   83 差异类群热图（CLR + KW + Dunn + Cliff's delta）—— 参考实现
   #   注 81 对 80 是**软依赖**：80 跳过/缺缓存时 81 只出组成与表，并在 notes 说明。
   list(id = "80", file = "80_network.R",            fun = "md_network",
        after = "05",                heavy = TRUE,  needs = c("network", "ecology")),

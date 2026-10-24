@@ -4,17 +4,17 @@
 > 本包按模块拆开出图。
 >
 > **两份来源**：
-> 1. nifH 小论文（`D:\01-Academic\06-nifH_BEF`）—— 20 张图 / 41 个面板，全部有归属模块；
-> 2. 2026 毕业论文（`D:\03-Graduation Thesis\13-数据分析\03-生态学数据分析`）——
+> 1. 自有项目 —— 全套图件，全部有归属模块；
+> 2. 2026 参考实现（`本地工作目录 参考实现\13-数据分析\03-生态学数据分析`）——
 >    补进 7 个新模块 + 4 条可选路径，共新增 10 张图（见第 1 节末尾）。
 
 ## 1. 出图清单（31 张）
 
-### 1.1 nifH 小论文（20 张图件；demo 配置下实际产出 19 张 —— `61_map` 需要联网取 DEM，默认关）
+### 1.1 自有项目（全套图件）
 
 | # | 图件 | 模块 | 面板构成 | 对应论文的 |
 |---|---|---|---|---|
-| 1 | `10_composition.pdf` | 物种组成 | A 门组成 ｜ B 属组成（x 轴 = **Zone×Vegetation 交互组**，与箱线图一致）；打开 `composition$indicator$enabled` 后追加 C = 指示种 IndVal。⚠ 原「丰度×出现率四象限」面板已于 2026-09-26 **移入 `12_niche_breadth`**（对应毕业论文 Fig1c） | Fig.1B、Fig.S3 |
+| 1 | `10_composition.pdf` | 物种组成 | A 门组成 ｜ B 属组成（x 轴 = **设计因子交互 交互组**，与箱线图一致）；打开 `composition$indicator$enabled` 后追加 C = 指示种 IndVal。⚠ 原「丰度×出现率四象限」面板已于 2026-09-26 **移入 `12_niche_breadth`**（对应原图 | Fig.1B、Fig.S3 |
 | 2 | `11_alpha.pdf` | α 多样性 | A–D 各 α 指数箱线（Shannon / Pielou / Richness / …）｜ E 稀释曲线 | Fig.1D、Fig.S4A、Fig.S4B、Fig.S2 |
 | 3 | `20_phylo_prep.pdf` | 系统发育树 | 树（fan 布局 + 分类色环） | Fig.1A |
 | 4 | `21_phylo_diversity.pdf` | 系统发育多样性 | A Faith's PD ｜ B NRI ｜ C NTI | Fig.1E、Fig.S4C、Fig.3A |
@@ -37,22 +37,22 @@
 
 > 1.1 表里是 20 行（`61_map` 需联网取 DEM，demo 默认关 → 实际产出 19 张），编号沿用历史顺序。
 
-### 1.2 2026 毕业论文补充（12 张；demo 配置下 19 → 31）
+### 1.2 2026 参考实现补充（12 张；demo 配置下 19 → 31）
 
-| # | 图件 | 模块 | 面板构成 | 对应毕业论文的 |
+| # | 图件 | 模块 | 面板构成 | 对应参考实现的 |
 |---|---|---|---|---|
-| 21 | `12_niche_breadth.pdf` | 生态位宽度 | **A** 样本生态策略组成堆叠柱（x = **前两个设计因子的交互组**）｜**B** 丰度×出现率四象限散点（**从 10_composition 移入**）｜**C** Levins' B vs 出现率 + gam 平滑 + 95% CI。版式与尺寸（200×150 mm）逐项对齐原图 | Fig1c_niche_rarity |
-| 22 | `44_constrained_ord.pdf` | 约束排序 | 单面板 triplot：样方点（按因子着色/定形状）+ env 箭头 + ggrepel 标签；副标题 `R2adj` 与 P | Fig3b-A（db-RDA） |
-| 23 | `45_response_curves.pdf` | GAM 响应曲线 | 一排 GAM 曲线（预测变量 = **随机森林前 3 个**，与原脚本 `RF → top3 → GAM` 同流水线）；只画 `p_smooth <= p_max` 的平滑项 | Fig3b-C |
-| 24 | `80a_network_global.pdf` | 共现网络·全局 | **左右各占一半版幅**：A 全局网络（按门着色 + 正负边，**无坐标轴**）｜ B 观测 vs 随机网络（柱 + 随机均值±SD，**保留**坐标轴）；183×92 mm | Fig5d-A/B |
-| 25 | `80b_network_by_group.pdf` | 共现网络·分组 | 分组子网络按 `ceiling(sqrt(n))` 自动排布（**6 个网络 = 2 行 × 3 列**），每格标题 `组名 (n=, N=, E=)`，**全部无坐标轴**；下方一条**窄**图例带（`heights = c(7, 1)`，只占约 12% 高度 —— 门色 + **每个门写出名字** + 相关方向 Positive/Negative）；183×165 mm | Fig5c |
-| 26 | `80c_network_turnover.pdf` | 共现网络·周转 | A 节点周转 Sankey ｜ B 丰富/稀有亚网络指标；183×150 mm | Fig5d-C、Fig5e |
-| 27 | `80d_network_nodes.pdf` | 共现网络·节点 | A betweenness top-N ｜ B 度-丰度 ｜ C Zi-Pi 四区（**183 mm 三格纵向**，`network$style$wide_layout = TRUE` 可回到原文的 533×178 mm 单排） | Fig5a |
-| 28 | `80e_network_metrics.pdf` | 共现网络·指标主图 | `metrics_main` **6 指标 × 设计因子（前 2 个）= 12 格** | Fig5b |
-| 29 | `80f_network_metrics_supp.pdf` | 共现网络·指标附图 | `metrics_supp` 另外 6 指标，同版式 12 格（`network$metrics_supp_figure` 可关） | FigS7 |
-| 30 | `81_taxon_group.pdf` | 通用类群分组 | A 分组 × 网络角色堆叠（需 80 的缓存，缺则退化） ｜ B 分组组成堆叠 | Fig6 |
-| 31 | `82_taxon_share.pdf` | 类群共享 | **单面板 UpSet**（原脚本 FigS3b 就是一张 UpSet）。原 B 面板（Venn / 共享条形）已于 2026-09-26 按用户裁定删除 | FigS3b |
-| 32 | `83_taxon_diff.pdf` | 差异类群 | A 差异类群热图（CLR + KW + Dunn + Cliff's δ）；显著类群 < `taxon_diff$min_sig`（默认 3）时回退为 Top-N 并在副标题写明 ｜ B（可选）Top 差异类群箱线 | FigS3c |
+| 21 | `12_niche_breadth.pdf` | 生态位宽度 | **A** 样本生态策略组成堆叠柱（x = **前两个设计因子的交互组**）｜**B** 丰度×出现率四象限散点（**从 10_composition 移入**）｜**C** Levins' B vs 出现率 + gam 平滑 + 95% CI。版式与尺寸（200×150 mm）逐项对齐原图 | 原图 |
+| 22 | `44_constrained_ord.pdf` | 约束排序 | 单面板 triplot：样方点（按因子着色/定形状）+ env 箭头 + ggrepel 标签；副标题 `R2adj` 与 P | 原图（db-RDA） |
+| 23 | `45_response_curves.pdf` | GAM 响应曲线 | 一排 GAM 曲线（预测变量 = **随机森林前 3 个**，与原脚本 `RF → top3 → GAM` 同流水线）；只画 `p_smooth <= p_max` 的平滑项 | 原图 |
+| 24 | `80a_network_global.pdf` | 共现网络·全局 | **左右各占一半版幅**：A 全局网络（按门着色 + 正负边，**无坐标轴**）｜ B 观测 vs 随机网络（柱 + 随机均值±SD，**保留**坐标轴）；183×92 mm | 原图 |
+| 25 | `80b_network_by_group.pdf` | 共现网络·分组 | 分组子网络按 `ceiling(sqrt(n))` 自动排布（**6 个网络 = 2 行 × 3 列**），每格标题 `组名 (n=, N=, E=)`，**全部无坐标轴**；下方一条**窄**图例带（`heights = c(7, 1)`，只占约 12% 高度 —— 门色 + **每个门写出名字** + 相关方向 Positive/Negative）；183×165 mm | 原图 |
+| 26 | `80c_network_turnover.pdf` | 共现网络·周转 | A 节点周转 Sankey ｜ B 丰富/稀有亚网络指标；183×150 mm | 原图、原图 |
+| 27 | `80d_network_nodes.pdf` | 共现网络·节点 | A betweenness top-N ｜ B 度-丰度 ｜ C Zi-Pi 四区（**183 mm 三格纵向**，`network$style$wide_layout = TRUE` 可回到原文的 533×178 mm 单排） | 原图 |
+| 28 | `80e_network_metrics.pdf` | 共现网络·指标主图 | `metrics_main` **6 指标 × 设计因子（前 2 个）= 12 格** | 原图 |
+| 29 | `80f_network_metrics_supp.pdf` | 共现网络·指标附图 | `metrics_supp` 另外 6 指标，同版式 12 格（`network$metrics_supp_figure` 可关） | 附图 |
+| 30 | `81_taxon_group.pdf` | 通用类群分组 | A 分组 × 网络角色堆叠（需 80 的缓存，缺则退化） ｜ B 分组组成堆叠 | 原图 |
+| 31 | `82_taxon_share.pdf` | 类群共享 | **单面板 UpSet**（原脚本 附图b 就是一张 UpSet）。原 B 面板（Venn / 共享条形）已于 2026-09-26 按用户裁定删除 | 附图b |
+| 32 | `83_taxon_diff.pdf` | 差异类群 | A 差异类群热图（CLR + KW + Dunn + Cliff's δ）；显著类群 < `taxon_diff$min_sig`（默认 3）时回退为 Top-N 并在副标题写明 ｜ B（可选）Top 差异类群箱线 | 附图c |
 
 **总数 = 19（demo 实产） + 12 = 31 张**（把 `network$metrics_supp_figure` 设为 `FALSE` 则为 30 张）。
 
@@ -75,11 +75,11 @@
 
 | 模块 | 内容 | 现状 |
 |---|---|---|
-| `42_constrained_ord` | RDA / CCA / db-RDA + envfit | **已被 `44_constrained_ord` 取代**（按毕业论文 `3_environmental_drivers.R:855-1000` 的 db-RDA 样式重写，不再是早期的自编版）。`44` 与它的差别：支持 `community` / `distance` 两种响应侧，`method` 可选 `dbrda` / `rda` / `cca` / `capscale`，VIF 阈值跟原脚本用 15，箭头长度按站点云半径自动归一。旧文件归档在**包外**构建记录 `analysis-packages/_build-notes/micro-div-pipeline/removed-code/`，仅作追溯（随本包单独分发时不存在）。 |
+| `42_constrained_ord` | RDA / CCA / db-RDA + envfit | **已被 `44_constrained_ord` 取代**（按原实现 的 db-RDA 样式重写，不再是早期的自编版）。`44` 与它的差别：支持 `community` / `distance` 两种响应侧，`method` 可选 `dbrda` / `rda` / `cca` / `capscale`，VIF 阈值跟原脚本用 15，箭头长度按站点云半径自动归一。旧文件归档在**包外**构建记录 `analysis-packages/_build-notes/micro-div-pipeline/removed-code/`，仅作追溯（随本包单独分发时不存在）。 |
 
 ## 4. 视觉口径来源（**唯一真身**）
 
-所有图的外观只由 `R/shared/12_plot_theme.R` 决定，且**逐项对齐你原代码 `R代码/11_shared.R` §0**：
+所有图的外观只由 `R/shared/12_plot_theme.R` 决定，且**逐项对齐原实现**：
 
 | 项 | 原代码 | 本包 |
 |---|---|---|

@@ -1,11 +1,11 @@
 # 04 · 踩坑库
 
-> 分两部分：**A 段**是从 nifH 论文原项目移植过来的工程坑（那些坑在那个项目里都真实发生过）；
+> 分两部分：**A 段**是从 原始研究原项目移植过来的工程坑（那些坑在那个项目里都真实发生过）；
 > **B 段**是本包建设与验证过程中新踩到的。改代码前先扫一遍。
 
 ---
 
-## A. 从 nifH 论文移植的工程坑
+## A. 从 原始研究移植的工程坑
 
 ### A1 · Rscript `--vanilla` 下中文路径读不到
 `Rscript --vanilla` 用 C locale，`read_excel("data/环境数据.xlsx")` 会报 "path does not exist"。
@@ -13,7 +13,7 @@
 更稳的做法是**输入文件一律用纯 ASCII 文件名**（本包五文件契约就是这么定的）。
 
 ### A2 · `library()` 必须在 `unit()` / `theme_set()` 之前
-`11_shared.R`（nifH）的 §0 里 `grid::unit()` 在 source 时就求值，而 ggplot2 对 grid 只是 Imports，
+原脚本（nifH）的 §0 里 `grid::unit` 在 source 时就求值，而 ggplot2 对 grid 只是 Imports，
 不自动挂搜索路径 → source 直接失败。
 **处置**：本包 `md_init()` 里先 `library(ggplot2); library(patchwork)`，其余按需 `md_load()`。
 
@@ -61,7 +61,7 @@ nifH 项目 `_run_all.R` 与 `_regenerate_figures.R` 各复制了一份脚本清
 **处置**：本包只有一份 `run/manifest.R`，两个模式（全跑 / `--figures-only`）都由它生成。
 
 ### A11 · 全局环境互相污染
-nifH 的 runner 在同一 R 会话里顺序 `source()`，顶层变量互相覆盖（02/05/08 都定义过 `results`）。
+原实现 runner 在同一 R 会话里顺序 `source`，顶层变量互相覆盖（02/05/08 都定义过 `results`）。
 **处置**：本包 runner 自己的变量一律 `.run_` 前缀；模块只导出函数，数据只走 `cache/`。
 **并且**：本包不再用"load(RData) 往全局注入几十个对象"的模式 —— 全部走 `md_core_*()` 访问器。
 
@@ -70,7 +70,7 @@ nifH 的 runner 在同一 R 会话里顺序 `source()`，顶层变量互相覆�
 ## B. 本包建设与验证中踩到的坑
 
 ### B1 · 示范数据按"平均相对丰度取前 300 ASV"会做不出可分析的群落
-实测：nifH 全数据 23,873 个 ASV 里 **23,251 个在 147 样本中只出现 1 次**（论文的极端周转）。
+实测：nifH 全数据里 **大量 ASV 在多样本中**只出现 1 次**（论文的极端周转）。
 按平均丰度取前 300，抽到的几乎全是"单样本爆发型"ASV —— 300 个里 240 个只出现在 1 个样本中；
 按"36 样本内出现率 ≥ 2"筛只剩 104 个，按 ≥3 筛只剩 33 个；还会出现 0 reads 样本、抽平深度只剩个位数。
 **处置**：改成 **「每个样本丰度前 k 个 ASV 的并集」**（k 取使并集 ≥ 目标数的最小值）。
@@ -165,7 +165,7 @@ nifH 数据 147 行只有 14 个唯一 `(Lat, Lon)`，站内距离恒为 0。
 处置（两处都要）：
 1. 画图与生成字母必须用**同一个分隔符**（本包统一 `inter_sep = "_"`，在 `CFG$plot$box` 里配）；
 2. `local_letters_df()` 在画字母前**校验** `letters$group` 是否都在 x 水平里，不匹配就 `md_warn` 报出来（不再静默）。
-另外 `CFG$plot$box$show_n` 默认 `FALSE` —— nifH 的箱线图本来就不标样本量。
+另外 `CFG$plot$box$show_n` 默认 `FALSE` —— 原实现箱线图本来就不标样本量。
 
 ### C8 · 图上出现中文（2026-09-26 实测）
 现象：`05_assemble.pdf` 的 x 轴是"ASV 总读长 >= 10 / 出现样本数 >= 1 / 样本读长 >= 1000"。
@@ -191,7 +191,7 @@ nifH 数据 147 行只有 14 个唯一 `(Lat, Lon)`，站内距离恒为 0。
 
 ### C9 · 不要在模块里自造主题或配色（2026-09-26 实测）
 现象：早期版本在 `config_demo.R` 里自造了 `Zone = #2B7A78/#3AAFA9/#8AC6D1`、
-`Vegetation = #D9A05B/#8FAE5B/#3E7C4A`，与 nifH 的 `cols_zone` / `cols_veg` 完全不同；
+`Vegetation = #D9A05B/#8FAE5B/#3E7C4A`，与 原实现 `cols_zone` / `cols_veg` 完全不同；
 主题的 border 线宽、axis.line、图例标题字重、strip 背景也与 `theme_isme()` 不一致。
 处置：`R/shared/12_plot_theme.R` 是**视觉唯一真身**，色板逐字照搬 nifH；config 只做**覆盖**不做**另立一套**。
 
@@ -230,7 +230,7 @@ md_stage(CFG, "11_analysis", {
 
 ---
 
-## C-2. 2026 毕业论文补充轮（模块 12 / 44 / 45 / 80 / 81 / 82 / 83）新踩到的
+## C-2. 2026 补充轮（模块 12 / 44 / 45 / 80 / 81 / 82 / 83）新踩到的
 
 ### C14 · igraph 的布局是随机的 —— 不设种子，图每次都不一样
 `layout_with_graphopt()` / `layout_with_fr()` / `layout_nicely()` 都从随机起点出发。

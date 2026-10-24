@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # 依赖：13_distances（cache/13_dist.rds，用于 β 分类 vs 系统发育的 Mantel 对比）
 #
-# 口径（与 nifH 02_Fig02.R §D 同源）：
+# 口径（与 nifH 原脚本 §D 同源）：
 #   分类学 β：betapart::beta.pair(index.family = "sorensen") 在**抽平后 P/A 矩阵**上算，
 #             β_total = β_turnover(sim) + β_nestedness(sne) 在配对级严格可加。
 #   丰度型敏感性（可选）：betapart::beta.pair.abund(index.family = "bray")
@@ -104,7 +104,7 @@ md_beta_components <- function(CFG) {
     Item = c("taxonomic_partition", "abundance_partition", "phylo_comparison",
              "aggregation", "additivity", "singletons", "Notes"),
     Value = c(
-      "betapart::beta.pair(index.family = 'sorensen')，在抽平后 P/A 矩阵上（与 nifH 02_Fig02.R 同源）",
+      "betapart::beta.pair(index.family = 'sorensen')，在抽平后 P/A 矩阵上（与 nifH 原脚本 同源）",
       ab_note,
       "本模块只用 13 的 wunifrac/unifrac 与分类学距离做 Mantel 对比；系统发育 Sorensen 的分解见模块 22",
       "配对级（下三角）先算，再按因子水平对（无序）求均值；水平对标签按因子水平顺序拼接",
@@ -136,7 +136,7 @@ md_beta_components <- function(CFG) {
 # 内部工具（local_ 前缀）
 # =============================================================================
 
-# 周转 / 嵌套的组分配色与图例文字 —— 照抄 02_Fig02.R §D：
+# 周转 / 嵌套的组分配色与图例文字 —— 沿用同一套样式 §D：
 #   退化支路（无系统发育版时）写死 c(Turnover = "#5B93C4", Nestedness = "#E0877C")，
 #   图例文字同 §D 的 lab_beta4（"Taxonomic turnover" / "Taxonomic nestedness"）。
 # 说明：R/shared/12_plot_theme.R 的 MD_BUILTIN_PAL（zone/veg/assembly/quadrant）
@@ -293,7 +293,7 @@ local_beta_mantel <- function(CFG, b_tot, b_tur) {
 }
 
 #' 面板 A：全配对池化分解（堆叠柱，标出各分量占比）
-#' 画法对齐 02_Fig02.R §D：geom_col(position = "stack", width = 0.54) + 白色描边 0.15，
+#' 画法对齐 原脚本 §D：geom_col(position = "stack", width = 0.54) + 白色描边 0.15，
 #' 分量配色与图例文字同 §D。
 local_fig_pooled <- function(pair_long) {
   cols <- intersect(c("Total", "Turnover", "Nestedness"), names(pair_long))
@@ -324,20 +324,20 @@ local_fig_pooled <- function(pair_long) {
 }
 
 #' 面板 B：按因子水平对的周转/嵌套均值（堆叠柱；轴太长时只保留最高/最低若干）
-#' 画法对齐 02_Fig02.R §D 的退化支路：堆叠柱 + 白色描边 0.15 + 图例在下方，
+#' 画法对齐 原脚本 §D 的退化支路：堆叠柱 + 白色描边 0.15 + 图例在下方，
 #' 轴标题文字同原图（"Sorensen dissimilarity"，原图用非 ASCII 的 ø，本包按铁律写 ASCII）。
 local_fig_levelpair <- function(by_lp, CFG) {
   if (is.null(by_lp) || !nrow(by_lp) || !"Turnover" %in% names(by_lp))
     return(md_empty_plot(CFG, "no level-pair summary"))
   d <- by_lp[!is.na(by_lp$Turnover), , drop = FALSE]
   if (!nrow(d)) return(md_empty_plot(CFG, "no level-pair summary"))
-  # 只画**第一个因子**（RegionPair = Zone 的区域对）—— 原脚本 02_Fig02.R §D 就是
+  # 只画**第一个因子**（RegionPair = Zone 的区域对）—— 原脚本 §D 就是
   # 一条 Zone RegionPair 的 x 轴，没有按因子分面。植被型的水平对不再出图（数字留在表里）。
   fac_keep <- unique(as.character(d$Factor))[1]
   d <- d[as.character(d$Factor) == fac_keep, , drop = FALSE]
   if (!nrow(d)) return(md_empty_plot(CFG, "no level-pair summary"))
   # 标签用**短的** Level_pair（如 "Coastal - Nearshore"）；
-  # 竖柱 + 45° 轴标签 + 底部两行图例 —— 对齐原脚本 02_Fig02.R §D（L558-572）。
+  # 竖柱 + 45° 轴标签 + 底部两行图例 —— 对齐原脚本 §D（L558-572）。
   d$Lab <- as.character(d$Level_pair)
   d$Tot <- d$Turnover + ifelse(is.na(d$Nestedness), 0, d$Nestedness)
   # 只画信息量最大的前 14 个（避免 x 轴标签爆掉）
@@ -363,7 +363,7 @@ local_fig_levelpair <- function(by_lp, CFG) {
                    legend.box = "vertical",
                    axis.text.x = ggplot2::element_text(angle = 45, hjust = 1,
                                                        size = MD_PT_COMP$tick))
-  # **不分面**：原脚本 02_Fig02.R §D 只有 Zone 的 RegionPair 一条 x 轴，
+  # **不分面**：原脚本 §D 只有 Zone 的 RegionPair 一条 x 轴，
   # 没有按因子分面的 strip。多因子时只画第一个因子（RegionPair）的水平对。
   g
 }

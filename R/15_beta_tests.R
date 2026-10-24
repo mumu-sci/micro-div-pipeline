@@ -5,12 +5,12 @@
 #
 # 口径要点（nifH 原码踩过的坑，逐条保留）：
 #   1. PERMANOVA 必须 by = "terms"：本机 vegan 的 by = "margin" 只返回末项 + Residual + Total
-#      （02_Fig02.R §D 注释实测）。交互模型因此用 by = "terms" 拿全部项。
+#      （原脚本 §D 注释实测）。交互模型因此用 by = "terms" 拿全部项。
 #   2. pairwise adonis2 = combn(sort(levels), 2) 逐对子集重跑；任一组 n < min_group_n
-#      记 NA 并在 Note 列写 "n<min_group_n"（08_Supp_diversity.R::pairwise_adonis2 口径）。
+#      记 NA 并在 Note 列写 "n<min_group_n"（原脚本 口径）。
 #      p 校正在**全部对**上做（p.adjust 对 NA 返回 NA，不影响其余值）。
 #   3. PERMDISP：betadisper + permutest，P = (#{perm >= stat} + 1) / (n + 1)
-#      （02_Fig02.R 手写口径，而非 permutest 的打印值）。
+#      （原脚本 手写口径，而非 permutest 的打印值）。
 #   4. 置换前 md_seed(CFG, offset)；不同检验/不同对用不同 offset，保证同轮可复现。
 #   5. 每个因子的 PERMDISP 单独拟合（各自取该因子可用水平），不跨因子混合。
 #      ⚠ 因此 A 面板里并列的 PERMDISP 点来自**不同的 betadisper 拟合**，不能横向当作同一尺度比较
@@ -251,7 +251,7 @@ md_beta_tests <- function(CFG) {
       "terms",
       paste(c("single", "single_all (~ f1 + f2)", "interaction (~ f1 * f2)")[
         c(TRUE, length(factors) >= 2, do_terms)], collapse = "; "),
-      "P = (#{perm >= statistic} + 1) / (n_perm + 1)（与 nifH 02_Fig02.R 手写口径一致）",
+      "P = (#{perm >= statistic} + 1) / (n_perm + 1)（与 nifH 原脚本 手写口径一致）",
       "每个因子的 PERMDISP 各自拟合 betadisper（各自取该因子 n >= min_group_n 的水平）；并列展示不等于同一尺度可比",
       if (do_anosim) "vegan::anosim (R statistic)" else "关闭",
       if (do_mrpp) "vegan::mrpp (delta, A)" else "关闭",

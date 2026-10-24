@@ -1,8 +1,8 @@
 # =============================================================================
 # R/40_env_summary.R —— 环境变量表征（描述统计 / VIF / 相关矩阵 / 组均值热图 / PCA 双标图）
 # -----------------------------------------------------------------------------
-# 口径来源（nifH 论文 10_Supp_env_SEM.R 与 11_shared.R §1，只读参考，不修改）：
-#   · 组均值热图：行 = 分组（Zone×Vegetation），列 = 环境变量，值 = 各组均值的列内 z-score
+# 口径来源（原始研究 原脚本 与 原脚本，只读参考，不修改）：
+#   · 组均值热图：行 = 分组（设计因子交互），列 = 环境变量，值 = 各组均值的列内 z-score
 #   · 相关矩阵：Spearman，**只对上三角独立配对做 BH 校正，再镜像**回下三角（nifH 口径）
 #   · VIF：手写 1/(1-R²)，与 nifH 口径一致（本包走共享 md_vif()）
 #
@@ -297,13 +297,13 @@ md_env_summary <- function(CFG) {
 
   # ---- 6. 图 ----
   # 画法逐项对照原脚本：
-  #   A 土壤 PCA 双标图  <- 10_Supp_env_SEM.R 「2a FigS7a 土壤 PCA 双标图」:
+  #   A 土壤 PCA 双标图  <- 原脚本 「2a 附图a 土壤 PCA 双标图」:
   #        Zone 着色 + Vegetation 定形（16/17/15/18）、点 2.2*2/3 / alpha 0.75 /
   #        stroke 0.5、变量箭头统一缩放（最长箭头 = 较小轴范围的 45%）、
   #        ggrepel 标签、过原点虚线、x/y expand 0.18、图例底部。
-  #   B 相关矩阵         <- 10_Supp_env_SEM.R 「2d.3 FigS8B」:
+  #   B 相关矩阵         <- 原脚本 「2d.3 附图B」:
   #        同一批指标顺序、geom_tile 白边 0.25、格内星号、蓝-白-绿同色带（±1）。
-  #   C 组均值热图       <- 10_Supp_env_SEM.R 「2d.2 FigS8A」:
+  #   C 组均值热图       <- 原脚本 「2d.2 附图A」:
   #        列内 z-score、对称 limits ±max|z|、同色带、最上一行 Zone 注释条。
   pt <- md_pt(CFG)
   group_cols <- NULL
@@ -543,7 +543,7 @@ md_env_summary <- function(CFG) {
   }
 
   # ---- 6b. 随机森林变量重要性（**可选面板，默认关**；env$rf$enabled = TRUE 才出）----
-  #   源：毕业论文 3_environmental_drivers.R:1199-1258（ranger + permutation importance，
+  #   参考实现（ranger + permutation importance，
   #       相对重要性缩放到 max = 1，单色单柱、无 dodged、无 model 图例）
   #   通用化：因变量与预测变量都来自 config，**不限于"环境 -> 群落"**。
   #   ⚠ 设计串 "ADD\nBCC" 里的 **D 区本来就是预留的空位** —— 打开本开关正好把它填满，
@@ -656,7 +656,7 @@ md_env_summary <- function(CFG) {
     sprintf("VIF = 1/(1-R²)（共享 md_vif()，与 nifH 手写口径一致）；阈值 %s，超阈值标记 collinear，retained_after_pruning 为逐步剔除后保留的集合。", vif_thr),
     notes,
     "Soil_PC1 是本包 50/52/71 唯一的来源（md_derived(CFG, \"Soil_PC1\")），其它模块不得自行重算。",
-    "组均值热图的值 = 各组均值的**列内 z-score**（nifH FigS8A 口径）。"))
+    "组均值热图的值 = 各组均值的**列内 z-score**（nifH 附图A 口径）。"))
 
   tp <- md_write_xlsx(CFG, "40_env_summary", list(
     Descriptive = desc,

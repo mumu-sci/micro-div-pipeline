@@ -300,7 +300,7 @@ md_sem <- function(CFG) {
   }))
 
   # ---------------------------------------------------------------------------
-  # 4. 分层路径图（逐项对 04_Fig04_SEM.R §A/B make_sem_path_nature）
+  # 4. 分层路径图（逐项对 原脚本 §A/B make_sem_path_nature）
   # ---------------------------------------------------------------------------
   # 布局：层号决定纵向位置；层内按 CFG$sem$layers 顺序左右均分。
   # 节点：**两行标签**（显示名 + "R2 = x.xx" 斜体），框宽由两行里较长的一行决定，
@@ -514,7 +514,7 @@ md_sem <- function(CFG) {
                                                        type = "closed")) +
       ggplot2::scale_colour_manual(values = c(col_pos, col_neg), guide = "none") +
       ggplot2::scale_linewidth_identity()
-  # 线型图例（与 04_Fig04_SEM.R 的图例口径一致；放在所有层之后以免被 scale 重置）
+  # 线型图例（与 原实现图例口径一致；放在所有层之后以免被 scale 重置）
   p <- p + ggplot2::scale_linetype_manual(
     name = NULL,
     values = c("Significant paths" = "solid", "Non-significant paths" = "dotted"),

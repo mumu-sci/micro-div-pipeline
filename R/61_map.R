@@ -8,7 +8,7 @@
 #   面板 B  局部放大图（CFG$map$zoom_bbox）
 #   inset   世界小图（仅当 CFG$map$countries 非 NULL 时）
 #
-# 画法来源：07_S1_study_area_map.R §4（DEM 配色）/ §6（主图）/ §7（世界小图）/
+# 画法参考实现（DEM 配色）/ §6（主图）/ §7（世界小图）/
 #   §8（放大图）/ §9（拼图与尺寸）。原脚本只画 ne_coastline，没有国界图层，
 #   故本模块也不取 ne_countries、不画国界。
 #
@@ -99,7 +99,7 @@ md_map <- function(CFG) {
   zoom_bbox <- CFG$map$zoom_bbox %||% bbox
   zoom_bbox <- as.numeric(zoom_bbox)
 
-  # 原脚本 07_S1_study_area_map.R §6 只 geom_sf(ne_coastline)；它取过的
+  # 原脚本 只 geom_sf(ne_coastline)；它取过的
   # ne_countries（map_sf / map_coastal）是死代码，画面上没有国界图层 ——
   # 故这里同样只取海岸线，不再取国界（逐像素对齐原图）。
   coast_sf <- NULL
@@ -192,7 +192,7 @@ md_map <- function(CFG) {
   }
 
   # ---------------------------------------------------------------------------
-  # 5. 绘图（画法逐项对齐 07_S1_study_area_map.R §6–§9）
+  # 5. 绘图（画法逐项对齐 原脚本–§9）
   # ---------------------------------------------------------------------------
   pt <- md_pt(CFG)
   # 暖砂褐地形配色（原脚本 §4 逐字：低地 #B9D7A8 -> 高地 #C9AE7E，两色线性渐变）
@@ -344,7 +344,7 @@ md_map <- function(CFG) {
   }
 
   fig <- md_compose(CFG, panels, design = design, guides = "collect", legend = "bottom")
-  # 原脚本 FIGURE_PANELS$FigS1 = 183 x 120 mm
+  # 原脚本 FIGURE_PANELS$附图 = 183 x 120 mm
   md_save_figure(CFG, fig, "61_map", height = if (length(panels) > 2) 130 else 120)
 
   # ---------------------------------------------------------------------------

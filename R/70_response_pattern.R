@@ -76,7 +76,7 @@ md_response_pattern <- function(CFG) {
 
   # ---------------------------------------------------------------------------
   # A0. 备选口径：Scheirer-Ray-Hare 双因子非参数检验
-  #   源：毕业论文 8_ARA_function.R:200-236（rcompanion::scheirerRayHare；
+  #   参考实现（rcompanion::scheirerRayHare；
   #       缺包退回 ART + 双因素 ANOVA，见 shared/11_stats.R 的 md_srh()）
   #   ⚠ 只在 pattern_test = "scheirer_ray_hare" 时执行；默认口径下图件与表**完全不变**。
   #     SRH 不做事后两两比较，所以单因子检验/CLD 字母仍走 KW + Dunn。
@@ -264,7 +264,7 @@ md_response_pattern <- function(CFG) {
       ordc <- cont_tab$variable[order(-abs(cont_tab$rho))]
       pick <- head(unique(c(ordc, cont_vars)), 2)
     } else pick <- head(cont_vars, 2)
-    # 着色因子照抄 05_Fig05_decoupling.R §B/D/E：按第二因子（Vegetation）上色 + cols_veg
+    # 着色因子沿用同一套样式 §B/D/E：按第二因子（Vegetation）上色 + cols_veg
     sc_col <- if (!is.null(f2)) f2 else f1
     sc_lv <- if (!is.null(sc_col))
       (ord_lv[[sc_col]] %||% unique(as.character(d[[sc_col]]))) else NULL
@@ -278,7 +278,7 @@ md_response_pattern <- function(CFG) {
       if (!is.null(cont_tab)) {
         r <- cont_tab[cont_tab$variable == v, , drop = FALSE]
         if (nrow(r))
-          # 标注锚在面板右上角（同 05_Fig05_decoupling.R §B/D/E 的 ann()：
+          # 标注锚在面板右上角（同 原脚本 §B/D/E 的 ann：
           # x=Inf / hjust=1 / vjust=1.3 / color="grey30"）
           g <- md_add_p_annot(g,
                               labels = sprintf("R2 = %.3f, P = %s",

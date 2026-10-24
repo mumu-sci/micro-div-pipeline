@@ -63,7 +63,7 @@
 | 图件指纹基线 | 包外 `analysis-packages/_build-notes/micro-div-pipeline/round5-baseline/fingerprint.csv` | **不在本包内**，随本包单独分发时不存在 |
 | 构建记录 | 包外 `_build-notes/micro-div-pipeline/` 的 `VALIDATION.md` / `DECISIONS.md` / `BUILD_LOG.md` | 每轮的验证记录、决策与沿革 |
 | 已归档代码 | 包外 `_build-notes/micro-div-pipeline/removed-code/` | 例如被 `44` 取代的 `42_constrained_ord.R` |
-| 论文目录只读快照 | 包外 `_build-notes/micro-div-pipeline/thesis-readonly-baseline.csv` | 证明改包过程**没有碰过论文原始文件** |
+| 论文目录只读快照 | 包外 `_build-notes/micro-div-pipeline/参考实现-readonly-baseline.csv` | 证明改包过程**没有碰过论文原始文件** |
 
 > 也就是说：**本包不自足于维护场景**。要完整跑一遍回归，需要 `analysis-packages/` 这一层，
 > 而不是只有 `micro-div-pipeline/`。分发单包时请一并说明这一点。

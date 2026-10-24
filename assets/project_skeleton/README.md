@@ -34,7 +34,7 @@
 3. **跑**：
    ```powershell
    cd <论文项目>
-   D:/R-4.5.2/bin/Rscript.exe --vanilla D:/01-Academic/00-学术文件/analysis-packages/micro-div-pipeline/R/90_run_all.R --config=config/config.R --project=.
+   Rscript --vanilla <包目录>/R/90_run_all.R --config=config/config.R --project=.
    ```
 
 ## 首次运行建议顺序

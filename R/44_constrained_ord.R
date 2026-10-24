@@ -1,7 +1,7 @@
 # =============================================================================
 # R/44_constrained_ord.R ---- 模块 44：约束排序（db-RDA / RDA / CCA / capscale）
 # -----------------------------------------------------------------------------
-# 源：毕业论文 3_environmental_drivers.R:855-1000（Part A: db-RDA triplot，Fig3b-A）
+# 参考实现（Part A: db-RDA triplot，原图）
 #     契约见 _build-notes/micro-div-pipeline/ROUND5_MODULE_SPEC.md
 #
 # 导出：md_constrained_ord(CFG)
@@ -53,7 +53,7 @@ local_cord_label <- function(method) {
          dbrda = "db-RDA", capscale = "capscale", rda = "RDA", cca = "CCA", "db-RDA")
 }
 
-#' 形状值：与 14_ordination 同源（02_Fig02.R §B/C 的 16/17/15/18）
+#' 形状值：与 14_ordination 同源（原脚本 §B/C 的 16/17/15/18）
 local_cord_shape <- function(lv) {
   builtin <- c(Bare = 16, Herb = 17, Shrub = 15, Tree = 18)
   out <- unname(builtin[as.character(lv)])
@@ -251,7 +251,7 @@ md_constrained_ord <- function(CFG) {
   }
 
   # ---------------------------------------------------------------------------
-  # 出图：单面板 triplot（原文 Fig3b-A 的美化逐项复刻）
+  # 出图：单面板 triplot（原文 原图美化逐项复刻）
   #   ① 白底无网格（theme_md，不用 ggplot 默认灰底）
   #   ② ggrepel 排斥标签 + 白色描边
   #   ③ 箭头按站点云半径归一（最长箭头 = 半径 × arrow_ratio）
@@ -416,13 +416,13 @@ md_constrained_ord <- function(CFG) {
     stringsAsFactors = FALSE)
 
   note_df <- data.frame(Note = c(
-    sprintf("口径源：毕业论文 3_environmental_drivers.R:855-1000（db-RDA triplot，Fig3b-A）。"),
+    sprintf("口径参考实现（db-RDA triplot，原图）。"),
     sprintf("VIF 逐步剔除阈值 = %s（原脚本 while (any(vif > 15))）；置换次数 = %d。",
             as.character(co_vif_thr), as.integer(co_perm)),
     sprintf("解释率 = CCA$eig[1:2] / tot.chi * 100（原脚本 928 行口径）。"),
     sprintf("箭头长度：最长箭头 = 站点云半径 × %s（原脚本 0.78；这里由 CFG$constrained_ord$arrow_ratio 控制）。",
             as.character(co_meta$arrow_ratio)),
-    sprintf("样方点着色 = %s；形状 = %s（原文 Fig3b-A 只按 Vegetation 着色，本包按 design$factors 顺序取）。",
+    sprintf("样方点着色 = %s；形状 = %s（原文 原图 只按 Vegetation 着色，本包按 design$factors 顺序取）。",
             colour_var %||% "none", shape_var %||% "none"),
     notes))
 

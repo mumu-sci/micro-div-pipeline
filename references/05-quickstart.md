@@ -49,22 +49,22 @@
 ### 第 3 步：跑
 ```powershell
 # 先自检（只读！不装包、不写 results/，只落 logs/preflight_*.csv）
-D:/R-4.5.2/bin/Rscript.exe --vanilla R/90_run_all.R --config=config/config.R --check
+Rscript --vanilla R/90_run_all.R --config=config/config.R --check
 
 # 用示范配置（36 样本 × 327 ASV，随包交付）
-D:/R-4.5.2/bin/Rscript.exe --vanilla R/90_run_all.R --config=config/config_demo.R
+Rscript --vanilla R/90_run_all.R --config=config/config_demo.R
 
 # 用你自己的配置
-D:/R-4.5.2/bin/Rscript.exe --vanilla R/90_run_all.R --config=config/config.R --project=D:/path/to/paper
+Rscript --vanilla R/90_run_all.R --config=config/config.R --project=D:/path/to/paper
 
 # 只跑部分模块（PowerShell 里逗号必须加引号）
-D:/R-4.5.2/bin/Rscript.exe --vanilla R/90_run_all.R '--only=01,05,10,11,13'
+Rscript --vanilla R/90_run_all.R '--only=01,05,10,11,13'
 
 # 只重出图（走缓存，跳过全部重计算）
-D:/R-4.5.2/bin/Rscript.exe --vanilla R/90_run_all.R --figures-only
+Rscript --vanilla R/90_run_all.R --figures-only
 
 # 忽略缓存全部重算
-D:/R-4.5.2/bin/Rscript.exe --vanilla R/90_run_all.R --force
+Rscript --vanilla R/90_run_all.R --force
 ```
 结果 → `results/`、图 → `figures/`、日志 → `logs/`。
 **任一模块 ERROR 会以非零退出码结束**（不会静默通过）。
@@ -85,7 +85,7 @@ D:/R-4.5.2/bin/Rscript.exe --vanilla R/90_run_all.R --force
 | 数据 | 01 / 05 | 数据体检 / 装配与标准化 | 五文件体检 + 对齐 + 过滤 + 逐模块标准化 + Good's coverage |
 | 组成与多样性 | 10 | 物种组成 | 任意层级组成堆叠柱 + Top-N + 核心/稀有四象限表（+ 可选指示种） |
 | | 11 | α 多样性 | 6 个指数 + 组间检验 + CLD 字母 + 稀释/累积曲线 |
-| | 12 | 生态位宽度 | 样本策略组成（双因子交互堆叠）+ 四象限散点 + Levins' B 与 gam 平滑（对应毕业论文 Fig1c） |
+| | 12 | 生态位宽度 | 样本策略组成（双因子交互堆叠）+ 四象限散点 + Levins' B 与 gam 平滑（对应原图 |
 | | 13 | 距离矩阵 | Bray / Jaccard / UniFrac / wUniFrac，单独存 rds |
 | | 14 | 排序 | PCoA / NMDS + 95% 椭圆 + 轴解释率 |
 | | 15 | 多元差异检验 | PERMANOVA（`by="terms"`）+ ANOSIM + PERMDISP + MRPP + 两两比较 |
@@ -116,7 +116,7 @@ D:/R-4.5.2/bin/Rscript.exe --vanilla R/90_run_all.R --force
 | 运行导出 | 90 / 95 | runner / 索引与校验 | manifest 驱动、日志、非零退出、`--check` 只读自检；产物索引 + 后置校验 |
 
 > 曾经的 `42_constrained_ord` 已移出管线，其能力由 **`44_constrained_ord`** 承接
-> （按毕业论文 `3_environmental_drivers.R:855-1000` 的 db-RDA 重写）。旧文件归档在包外的
+> （按原实现 的 db-RDA 重写）。旧文件归档在包外的
 > `_build-notes/micro-div-pipeline/removed-code/`，只作追溯用。
 
 **不做**：宏基因组 / KO-KEGG 通路、差异丰度（DESeq2 / ANCOM-BC / LEfSe）、
@@ -176,13 +176,13 @@ BiocManager::install("metagenomeSeq")
 | `references/01-method-menu.md` | 科学问题 → 模块；模块 → 方法选项与推荐规则 |
 | `references/02-params.md` | **全参数总表**（参数 / 默认 / 可选项 / 推荐 / 理由 / 何时要改） |
 | `references/03-module-specs.md` | 32 个模块的签名、输入输出、消费/产出的缓存、验收要点 |
-| `references/04-pitfalls.md` | 踩坑库（含从 nifH 论文移植的工程坑 + 本包实测） |
+| `references/04-pitfalls.md` | 踩坑库（含从 原始研究移植的工程坑 + 本包实测） |
 | `references/06-figure-map.md` | 哪张图来自哪个模块、对应论文哪张图；视觉口径的"唯一真身"对照表 |
 | `references/07-spare.md` | 默认关着的备用能力有哪些、怎么开 |
 | `references/08-maintenance.md` | **改这个包本身**的流程：`--check` 自检、回归基线与比对、验收硬线、禁止项 |
 | `config/config_template.R` | 配置模板（全参数、每项带推荐注释） |
 | `config/config_demo.R` | 示范数据配置 |
-| `assets/make_demo_data.R` | 示范数据生成脚本（从 nifH 论文数据只读抽取，固定 seed） |
+| `assets/make_demo_data.R` | 示范数据生成脚本（从 原始研究数据只读抽取，固定 seed） |
 | `assets/project_skeleton/` | 新论文项目骨架 |
 | `assets/compare_figures.R` | 两张图逐像素比对（改包回归用） |
 | `scripts/audit_figures.R` | 图件体检：非 ASCII 审计 + 位图 XObject 计数 + 页尺寸 |
@@ -206,6 +206,6 @@ nifH 扩增子论文数据中**只读抽取**而来（固定 seed = 123）：
 
 > ⚠ `data/` 只是**模板与自检用**，不得用于发表。要用自己的数据，请按 `references/00-data-contract.md` 组织。
 >
-> ⚠ 这批数据**极端单例化**（原数据 23,251 / 23,873 个 ASV 在 147 样本中只出现 1 次），
+> ⚠ 这批数据**极端单例化**（原数据 绝大多数 ASV 在多样本中只出现 1 次），
 > 所以示范结果里"核心类群几乎为 0、β 周转极高、漂变占绝对主导、环境解释力只有百分之几"
 > 都是**数据的真实特征**（与那篇论文的结论一致），不是程序错误。

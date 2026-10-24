@@ -5,13 +5,13 @@
 # 内容：
 #   1. Stegen 五过程判定复核 + 比例汇总，四种口径：
 #        总体 / 按因子 1（同因子 1 的样本对）/ 按因子 2 / 按因子交互
-#        -- 与 nifH 09_Supp_assembly.R 的 Overall / By_Zone / By_Vegetation / By_Both 对齐
+#        -- 与 nifH 原实现 Overall / By_Zone / By_Vegetation / By_Both 对齐
 #   2. betaNTI × RCbray 四象限散点（阈值来自 CFG$assembly$bnti_thr / rcbray_thr）
 #   3. 图（画法逐项对照 nifH 原脚本）：
-#        A = 过程比例堆叠柱      ← 03_Fig03_assembly.R §B（Fig3B）
-#        B = betaNTI×RCbray 四象限 ← 09_Supp_assembly.R §5（FigS5C）
+#        A = 过程比例堆叠柱      ← 原脚本 §B
+#        B = betaNTI×RCbray 四象限 ← 原脚本（附图C）
 #        C = **可选备用面板**（默认关）「样本级随机性 vs 平均群落周转」
-#                                  ← 03_Fig03_assembly.R §D（Fig3D）的画法
+#                                  ← 原脚本 §D的画法
 #
 # 可选备用面板（默认关，不开时本模块仍只出 A/B 两格，默认出图张数不变）：
 #   CFG$spare$process_vs_turnover <- list(
@@ -23,7 +23,7 @@
 #     fit     = "lm"        # lm | gam
 #   )
 #   x 的过程占比口径 = pair_df 展平到样本级后样本内归一化
-#     （同 nifH 15_Supp_assembly_ARA.R §1.1）；y 的平均周转取自模块 13 的距离矩阵
+#     （同 nifH 原脚本）；y 的平均周转取自模块 13 的距离矩阵
 #     （md_dist_get，逐行对非对角元素取均值），**本模块不自己算距离、不重算零模型**。
 #
 # **距离衰减 DDR 不在本模块** -- 那是 33_distance_decay（用户明确要求分开）。
@@ -94,7 +94,7 @@ md_assembly_process <- function(CFG) {
   data_feat <- local31_feature_table(pair_df, bnti_thr)
 
   # ---- 4. 图 A：过程比例堆叠柱（总体 + 各口径）----
-  # 画法照抄 03_Fig03_assembly.R §B：geom_bar(stat="identity", width=0.75,
+  # 画法沿用同一套样式 §B：geom_bar(stat="identity", width=0.75,
   #   color="white", linewidth=0.2) + scale_fill_manual(cols_assembly, drop=FALSE)
   #   + labs(x=..., y="Proportion (%)") + 45 度 x 轴标签。
   # （md_bar_stack() 把柱宽固定 0.65、描边固定 NA，表达不了原图的白描边，
@@ -120,11 +120,11 @@ md_assembly_process <- function(CFG) {
     theme_md(CFG = CFG) +
     ggplot2::theme(legend.position = "bottom",
                    legend.box = "vertical",
-                   # 照抄 03_Fig03_assembly.R §B：x 轴标签一律 45 度（标签保持单行）
+                   # 沿用同一套样式 §B：x 轴标签一律 45 度（标签保持单行）
                    axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size = pt$tick))
 
   # ---- 图 B：betaNTI × RCbray 四象限散点 ----
-  # 画法照抄 09_Supp_assembly.R §5 的四象限散点（FigS5C）：
+  # 画法沿用同一套样式 的四象限散点（附图C）：
   #   只画 ±阈值 参考线（不画 0 线）、按过程着色（cols_assembly, drop=FALSE）、
   #   图例名 "Ecological Process"、右下角副标题给成对比较数。
   dd <- pair_df[is.finite(pair_df$bnti) & is.finite(pair_df$rcbray), , drop = FALSE]
@@ -145,7 +145,7 @@ md_assembly_process <- function(CFG) {
   }
 
   # ---- 图 C（可选备用面板）：任意样本级指标 vs 平均群落周转 ----
-  # 对照 03_Fig03_assembly.R §D（散点 + geom_smooth + 报 adj R2）。
+  # 对照 原脚本 §D（散点 + geom_smooth + 报 adj R2）。
   # **默认关**：CFG$spare$process_vs_turnover$enabled = FALSE 时不画这一格，
   # 本模块仍按「过程比例堆叠柱 + 四象限散点」两个面板出图。
   # 打开方式见本模块头部注释与 Note sheet。
@@ -202,7 +202,7 @@ md_assembly_process <- function(CFG) {
 # -----------------------------------------------------------------------------
 
 #' 组装过程配色 —— 走主题：md_pal(CFG, levels, "assembly") 会自动命中
-#' MD_BUILTIN_PAL$assembly（**逐字照搬 nifH 的 cols_assembly**，见 12_plot_theme.R）。
+#' MD_BUILTIN_PAL$assembly（**逐字照搬 原实现 cols_assembly**，见 12_plot_theme.R）。
 #' 只有用户显式在 CFG$figure$palette$assembly / $process 里覆盖时才用自定义色。
 local31_process_cols <- function(CFG, levels) {
   p <- CFG$figure$palette$assembly %||% CFG$figure$palette$process
@@ -240,7 +240,7 @@ local31_mean_dist <- function(CFG, metric) {
   data.frame(sample = rownames(m), .value = as.numeric(v), stringsAsFactors = FALSE)
 }
 
-#' 样本级过程占比（口径同 nifH 15_Supp_assembly_ARA.R §1.1：
+#' 样本级过程占比（口径同 nifH 原脚本：
 #' 把 pair_df 的 Sample1 / Sample2 展平后按样本计数、样本内归一化）
 local31_sample_prop <- function(pair_df, proc_levels) {
   s <- c(as.character(pair_df$sample1), as.character(pair_df$sample2))
@@ -257,7 +257,7 @@ local31_sample_prop <- function(pair_df, proc_levels) {
 }
 
 #' 画备用面板。返回 NULL = 不出这一格（未启用 / 没给 x / 数据不足 / y 取不到）。
-#' 画法照抄 nifH 03_Fig03_assembly.R §D：散点 + geom_smooth() + 面板内报 adj R2；
+#' 画法照抄 nifH 原脚本 §D：散点 + geom_smooth + 面板内报 adj R2；
 #' 分组着色走 md_pal()，线条/散点/字号全部走 12_plot_theme.R。
 local31_spare_panel <- function(CFG, pair_df, proc_levels, proc_cols, pt) {
   sp <- local31_spare_cfg(CFG)
@@ -380,10 +380,10 @@ local31_spare_note <- function(CFG, spare) {
                   sp$enabled, "）：本模块图件只有「过程比例堆叠柱 + betaNTI x RCbray 四象限」",
                   "两个面板。想加「随机性 vs 群落周转」这一格，置 enabled = TRUE 并给 x",
                   "（样本级过程名或分析总表里的数值列），y 默认 MeanBeta = 该样本与其余样本的",
-                  "平均群落距离（md_dist_get 的距离矩阵逐行平均）。画法照 03_Fig03_assembly.R §D。"))
+                  "平均群落距离（md_dist_get 的距离矩阵逐行平均）。画法照 原脚本 §D。"))
   paste0("【可选备用面板】已出图（enabled = TRUE）：", spare$note,
-         "；散点 + 单条 geom_smooth + 面板内 adj R2 标注（照 03_Fig03_assembly.R §D）；",
-         "过程占比口径同 nifH 15_Supp_assembly_ARA.R §1.1（pair_df 展平后样本内归一化）。")
+         "；散点 + 单条 geom_smooth + 面板内 adj R2 标注（照 原脚本 §D）；",
+         "过程占比口径同 nifH 原脚本（pair_df 展平后样本内归一化）。")
 }
 
 local31_process <- function(bnti, rc, bnti_thr, rc_thr) {

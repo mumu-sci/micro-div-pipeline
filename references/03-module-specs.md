@@ -202,19 +202,19 @@
 
 ---
 
-## 组 9 · 生态位 / 约束排序 / 响应曲线（12 / 44 / 45，2026 毕业论文补充轮）
+## 组 9 · 生态位 / 约束排序 / 响应曲线（12 / 44 / 45，2026 补充轮）
 
 ### `12_niche_breadth` — `md_niche_breadth(CFG)`
-- **源**：毕业论文 `1_community_composition.R:415-900`（原 `6_niche_rarity.R`）
+- **源**：原实现（原脚本）
 - **输入**：`md_core(CFG)`（`$asv_raw` 或 `$asv_rare`，取决于 `niche$input`）
 - **算**：`md_niche_table()`（Levins' B / Shannon B + 丰度×出现率四象限 + 出现样本数）+ `md_sample_strategy()`（样本级四类细胞占比）+ 阈值敏感性扫描
-- **图**：`12_niche_breadth.pdf`（**200 × 150 mm**，逐项对齐毕业论文 Fig1c_niche_rarity）：A 样本生态策略组成堆叠柱（x = **前两个设计因子的交互组**，alpha 0.85 + 黑边 0.3，标签 45° 两行）｜ B 丰度×出现率四象限散点（**从 10_composition 移入**，复刻原脚本 p_07sa：固定 0.1/10 阈值线 + 4 个角标 + log10 y + xlim 0-40，**无曲线**）｜ C Levins B vs 出现率 + **gam 平滑 + 95% CI**（复刻 p_07sb：`method='gam', formula=y~s(x,bs='cs'), colour='#D55E00', alpha=0.15`，k 自适应）
+- **图**：`12_niche_breadth.pdf`（**200 × 150 mm**，逐项对齐原图 样本生态策略组成堆叠柱（x = **前两个设计因子的交互组**，alpha 0.85 + 黑边 0.3，标签 45° 两行）｜ B 丰度×出现率四象限散点（**从 10_composition 移入**，复刻原脚本 p_07sa：固定 0.1/10 阈值线 + 4 个角标 + log10 y + xlim 0-40，**无曲线**）｜ C Levins B vs 出现率 + **gam 平滑 + 95% CI**（复刻 p_07sb：`method='gam', formula=y~s(x,bs='cs'), colour='#D55E00', alpha=0.15`，k 自适应）
 - **表**：`Niche_Breadth` \| `Cell_summary` \| `Sample_strategy` \| `Threshold_sensitivity` \| `Sample_stats` \| `Note`
 - **开关**：`CFG$niche$enabled`；`index`(levins/shannon/both)、`level`(asv/sample/both)、`input`(raw/rarefied)、`thr_abund`(0.1)、`thr_prev`(10)、`groups`
 - **验收**：角标文字纯 ASCII（`Core` / `CondRare` / `TransRare` / `PermRare`）；`index="both"` 时表里两列都有、图仍用 `Levins_B`
 
 ### `44_constrained_ord` — `md_constrained_ord(CFG)`
-- **源**：毕业论文 `3_environmental_drivers.R:855-1000`（Part A db-RDA triplot，Fig3b-A）
+- **源**：原实现（Part A db-RDA triplot，原图）
 - **输入**：`md_core_asv(CFG, "alpha")`（响应侧，**需转置为样本×变量**再传给 `md_cord_fit`）或 `md_dist_get()`；`md_core_analysis(CFG)` 取解释变量
 - **算**：`md_cord_fit()`：VIF>15 逐步剔除 → `anova(perm=999)` → `anova(by="terms")` → `RsquareAdj` → `scores("sites"/"bp")` → 轴解释率
 - **图**：`44_constrained_ord.pdf`（单面板，183 × 110 mm）triplot：样方点按 `factors[1]` 着色 / `factors[2]` 定形状 + env 箭头（长度按 `arrow_ratio` 归一）+ ggrepel 标签 + `R2adj`/P 副标题
@@ -223,7 +223,7 @@
 - **降级**：`md_cord_fit()` 返回 NULL → SKIP（解释变量不足 / 样本 < 5 / vegan 拟合失败）
 
 ### `45_response_curves` — `md_response_curves(CFG)`
-- **源**：毕业论文 `3_environmental_drivers.R:1261-1345`（§6 GAM 非线性响应，Fig3b-C）
+- **源**：原实现（§6 GAM 非线性响应，原图）
 - **输入**：`md_core_analysis(CFG)`；`y` 任意连续列，`x` 任意列名向量（NULL → `env$vars`）
 - **算**：每个 `x` 调一次 `md_gam_curve()`（`mgcv::gam(s(x, k), method="REML")`；`random` 非空时自动升 `gamm`）；只留 `p_smooth <= p_max`；全超阈值则留 P 最小者
 - **图**：`45_response_curves.pdf`（183 × 70 mm）：**只有一组 GAM 曲线**（每变量一格，ncol 自适应）。预测变量默认取**随机森林前 `max_panels`（3）个**（对齐原脚本 `RF -> top3 -> GAM`，读不到模块 40/71 的 RF 结果时模块 45 自己跑一次 `md_rf_fit()`）；只画 `p_smooth <= p_max` 的平滑项，一个都没通过时按与 83 相同的回退口径只显示 P 最小的一个并在面板内标注 `p > 0.10 (not significant)`。原实现的 **B 面板（EDF / -log10(P) 条形）是自造的，2026-09-26 已删除**
@@ -231,10 +231,10 @@
 - **开关**：`response_curves$enabled`；`y`、`x`、`engine`(gam/gamm/lm)、`k`(4)、`random`、`grid_n`(100)、`edf_nonlin`(1.1)、`p_max`(0.1)、`max_panels`(6)、`x_from`（NULL / `"rf_top"`）
 - **验收**：**因变量不必是群落**（这是与原文最大的区别）；`random` 给出时 fit 表的 `engine` 为 `"gamm"`
 
-## 组 10 · 网络与类群（80–83，2026 毕业论文补充轮）
+## 组 10 · 网络与类群（80–83，2026 补充轮）
 
 ### `80_network` — `md_network(CFG)`（**默认图件清单里唯一出 4 张图的模块**）
-- **源**：毕业论文 `5_network_structure.R`（合并了 `12_network_structure.R` + `13_abundant_rare_network.R`）
+- **源**：原实现（合并了 原脚本 + 原脚本）
 - **输入**：`md_core_asv(CFG, "composition")`（相对丰度）+ `md_core(CFG)$tax` + `md_core_meta(CFG)`
 - **算**：出现率过滤 → Spearman 相关 → `|r|` 阈值 → igraph 建图（**边权保留正负号**）→ 中心性（最大连通组分）→ 样本级指标（含 bootstrap 均衡）→ Louvain 模块 + Zi-Pi 角色 → 韧性模拟 → Erdos-Renyi 随机网络 → 分组子网络 → 丰富/稀有亚网络 → 节点周转
 - **图（6 张，编号 80a-80f）**：`80a_network_global.pdf`（183×92，**左右各半**：A 全局网**无坐标轴** ｜ B vs 随机**保留**坐标轴）· `80b_network_by_group.pdf`（183×165，分组网**按 ceiling(sqrt(n)) 排布，6 个 = 2 行 × 3 列**、无坐标轴；下方图例带用 `heights = c(7, 1)` 压到约 12% 高度，**写出每个门名**）· `80c_network_turnover.pdf`（183×150，A 周转 Sankey ｜ B 丰富/稀有亚网络）· `80d_network_nodes.pdf`（183×220，A betweenness ｜ B 度-丰度 ｜ C Zi-Pi；`network$style$wide_layout = TRUE` 回到原文 533.4×177.8 单排）· `80e_network_metrics.pdf`（183×165，6 指标 × 2 因子 = 12 格）· `80f_network_metrics_supp.pdf`（同版式 12 格，`metrics_supp_figure` 控制）。
@@ -245,7 +245,7 @@
 - **验收**：`robustness_R()` 之前必须 `md_seed`（修掉原脚本的 seed 错位）；布局在**出图段**算（`style$layout` 不进缓存键）；图上文字纯 ASCII（原文的中文指标名已换英文，见 `ROUND5_MODULE_SPEC.md` §5）
 
 ### `81_taxon_group` — `md_taxon_group(CFG)`
-- **源**：毕业论文 `6_ecological_guilds.R`；**硬编码固氮属表已删除**，改读 `data/05_taxon_group.csv`
+- **源**：原实现；**硬编码固氮属表已删除**，改读 `data/05_taxon_group.csv`
 - **输入**：可选第 6 文件（`taxon, group`）+ `md_core_asv`；网络角色部分读 `cache/80_network.rds`（**软依赖**，不用会 stop 的访问器）
 - **算**：组成（组×样本相对丰度）→ 梯度检验 `md_group_test()` → 网络角色（组×Zi-Pi role）→ 响应变量 Spearman → 跨组边 Fisher → 组指示种 `md_indval()`
 - **图**：`81_taxon_group.pdf`（183 × 150 mm，heights `c(1, 1.2)`）：A 组×网络角色堆叠 ｜ B 组组成堆叠（**缺 80 缓存时退化为只有 B**）
@@ -255,10 +255,10 @@
 - **验收**：未匹配类群归 `Unmapped` 并在 notes 报出未匹配 ASV 数与占比；覆盖率 < 50% 时 `md_warn`
 
 ### `82_taxon_share` — `md_taxon_share(CFG)`
-- **源**：毕业论文 `S4_supplementary_taxa.R:296-690`（原 `8_asv_sharing.R`）
+- **源**：原实现（原脚本）
 - **输入**：`md_core_asv` + `md_core_meta`；分组取 `taxon_share$factor`（NULL → `design$factors[1]`）
 - **算**：各水平"至少在 `min_prev` 个样本出现"的类群集合 → 组合交集统计
-- **图**：`82_taxon_share.pdf`（183 × 110 mm）：**单面板 UpSet**（原脚本 FigS3b 就是一张 UpSet）。原 B 面板（Venn / 共享-独有条形）已于 2026-09-26 按用户裁定删除，`show_venn` 键保留但不再生效；单面板不进 patchwork，因此图是**全矢量**的（0 个位图 XObject）
+- **图**：`82_taxon_share.pdf`（183 × 110 mm）：**单面板 UpSet**（原脚本 附图b 就是一张 UpSet）。原 B 面板（Venn / 共享-独有条形）已于 2026-09-26 按用户裁定删除，`show_venn` 键保留但不再生效；单面板不进 patchwork，因此图是**全矢量**的（0 个位图 XObject）
 - **表**：`Set_size` \| `Intersection` \| `Sharing_stats` \| `Note`
 - **开关**：`taxon_share$enabled`；`factor`、`rank`(ASV)、`min_prev`、`max_comb`(20)、`upset_top_n`(20)、`show_venn`、`style$*`
 - **降级**：因子水平 < 2 → SKIP；`ComplexHeatmap` 缺失 → 用条形/geom_tile 兜底
@@ -267,7 +267,7 @@
   所以这两个面板**不是矢量**。若期刊硬性要求全矢量，需要另做一版。
 
 ### `83_taxon_diff` — `md_taxon_diff(CFG)`
-- **源**：毕业论文 `S4_supplementary_taxa.R:690-1100`（原 `9_differential_analysis.R`）
+- **源**：原实现（原脚本）
 - **输入**：`md_core_asv(CFG, "composition")` + `md_core(CFG)$tax` + `md_core_meta`
 - **算**：出现率过滤（`min_prev_frac` 0.05）→ `md_glom()` 到 `rank` → `md_rel()`/`md_clr()` → `md_diff_taxa_kw()`（KW+BH+Cliff's δ+富集组）→ `md_taxon_dunn()`
 - **图**：`83_taxon_diff.pdf`（183 × 150 mm）：A 差异类群热图（Top `top_n`，`heatmap_engine` ComplexHeatmap/pheatmap，`heatmap_scale` row_z/rel/clr）｜ B（`show_box`）Top 差异类群箱线
@@ -276,7 +276,7 @@
 - **降级**：显著类群 < `min_sig`（默认 3）时，热图**回退为按 KW_padj 排序的 Top-N**，副标题写明 `None/only N passed FDR < 0.05; showing top N by KW p`（与模块 45 的回退同一口径）；列数 < 2 或矩阵为空 → SKIP；热图包全缺 → `geom_tile()` 兜底（离散轴，不会再出现 0.00-1.00 的数值轴）
 - **验收**：CLR 伪计数缺省 = 最小正值的 1/2（原脚本口径，见 pitfalls C18）
 
-## 组 11 · 已有模块的**可选增量**（默认全关，2026 毕业论文补充轮）
+## 组 11 · 已有模块的**可选增量**（默认全关，2026 补充轮）
 
 | 模块 | 新增路径 | 开关 | 默认 | 影响 |
 |---|---|---|---|---|
@@ -337,13 +337,13 @@
 ### 图件（示范数据下 **31 张**；`61_map` 要联网取 DEM，默认关）
 
 ```
-nifH 小论文口径（19 张实产）：
+本包口径（示范数据实产 19 张）：
   10_composition  11_alpha  14_ordination  16_beta_components  17_gamma_partition
   20_phylo_prep  21_phylo_diversity  30_null_models  31_assembly_process
   33_distance_decay  34_variance_partition  40_env_summary  43_mantel_mrm
   50_lmm  52_sem  53_sensitivity  60_spatial_autocorr  70_response_pattern  71_response_linkage
 
-2026 毕业论文补充（12 张）：
+2026 参考实现补充（12 张）：
   12_niche_breadth  44_constrained_ord  45_response_curves
   80a_network_global  80b_network_by_group  80c_network_turnover
   80d_network_nodes  80e_network_metrics  80f_network_metrics_supp

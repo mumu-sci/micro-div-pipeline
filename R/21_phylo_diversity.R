@@ -4,11 +4,11 @@
 # 本模块把「系统发育多样性（PD）」与「系统发育群落结构（NRI/NTI）」合并在一处：
 # 两者都只依赖同一棵修剪后的树与同一个丰度矩阵，分开算会重复修剪、重复零模型。
 #
-# 方法（与 nifH 论文 13_Supp_NRI_NTI.R 逐条对齐）：
+# 方法（与 原始研究 原脚本 逐条对齐）：
 #   · 修剪：tree tip ∩ ASV 交集 -> 确保 rooted -> multi2di 处理多分叉
 #   · Faith's PD：picante::pd(include.root = FALSE)（与 nifH 口径一致）
 #   · MPD / MNTD：丰度加权（abundance.weighted = TRUE）
-#   · 零模型：taxa.labels（等价于 nifH 的 sample(rownames) 逐次打乱 ASV 标签：
+#   · 零模型：taxa.labels（等价于 原实现 sample(rownames) 逐次打乱 ASV 标签：
 #             taxaShuffle 对行列同时施加同一置换，故与手写循环数值等价，
 #             已用示范数据实测：|ΔMPD| < 5e-16、|ΔMNTD| < 3e-16）
 #   · SES = (obs - null_mean) / null_sd；NRI = -SES_MPD，NTI = -SES_MNTD
@@ -171,8 +171,8 @@ md_phylo_diversity <- function(CFG) {
 
   # ---- 7. 图 ----
   # 面板构成按 references/06-figure-map.md：A = Faith's PD | B = NRI | C = NTI
-  # 画法对照：01_Fig01.R §E 的 PD 箱线（走 11_shared.R §4.1 plot_dual_factor_panel()）
-  #   与 13_Supp_NRI_NTI.R §6 的 NRI 箱线（走 11_shared.R §4.2 plot_nri_nti()）。
+  # 画法对照：原脚本 §E 的 PD 箱线（走 原脚本 plot_dual_factor_panel）
+  #   与 原实现 NRI 箱线（走 原脚本 plot_nri_nti）。
   # 字号走拼图轨道 MD_PT_COMP，与 md_compose() 末端套的 theme_md_comp() 同一条轨道。
   pt  <- md_pt(CFG, comp = TRUE)
   f1  <- factors[1] %||% NA_character_
@@ -203,16 +203,16 @@ md_phylo_diversity <- function(CFG) {
     }
     ps
   }
-  # plot_dual_factor_panel()（PD 面板）用 "; " 连接（11_shared.R L1676）
+  # plot_dual_factor_panel（PD 面板）用 "; " 连接（原脚本 L1676）
   kw_pd <- function(v) md_kw_text(kw_ps(v))
-  # plot_nri_nti()（NRI/NTI 面板）用 " ; " 连接（11_shared.R L1823，原脚本自身写法）
+  # plot_nri_nti（NRI/NTI 面板）用 " ; " 连接（原脚本 L1823，原脚本自身写法）
   kw_nri <- function(v) {
     ps <- kw_ps(v)
     if (!length(ps)) return(NULL)
     paste(vapply(names(ps), function(nm) paste0(nm, ": ", md_kw_fmt(ps[[nm]])),
                  character(1)), collapse = " ; ")
   }
-  # 交互组 CLD 字母（原图：NRI/NTI 与 PD 都在 Zone×Vegetation 交互组上做 Dunn + multcompView）
+  # 交互组 CLD 字母（原图：NRI/NTI 与 PD 都在 设计因子交互 交互组上做 Dunn + multcompView）
   ltr_inter <- function(v) {
     g <- tryCatch(md_group_test(CFG, out_plot, v, ".inter", test = test, p_adjust = padj,
                                 min_n = 3, order_levels = levels(out_plot$.inter)),
@@ -271,7 +271,7 @@ md_phylo_diversity <- function(CFG) {
   ord <- intersect(c("A", "B", "C"), names(plots))
   plots <- plots[ord]
   design <- if (length(plots) >= 3) "AABB\nAACC" else if (length(plots) == 2) "AABB" else "AAAA"
-  # 图例：照抄 13_Supp_NRI_NTI.R §6 L279-286（guides = "collect"，Vegetation 图例置底）
+  # 图例：沿用同一套样式 L279-286（guides = "collect"，Vegetation 图例置底）
   p <- md_compose(CFG, plots, design = design, guides = "collect", legend = "bottom")
   md_save_figure(CFG, p, "21_phylo_diversity", height = 135)
 
@@ -284,7 +284,7 @@ md_phylo_diversity <- function(CFG) {
     value = c("MPD/MNTD 丰度加权（abundance.weighted = TRUE）",
               paste0("picante null.model = taxa.labels（等价于逐次打乱 ASV 标签），runs = ", runs),
               "SES = (obs - null_mean) / null_sd；NRI = -SES_MPD，NTI = -SES_MNTD",
-              "picante::pd(include.root = FALSE)，与 nifH 论文口径一致",
+              "picante::pd(include.root = FALSE)，与 原始研究口径一致",
               "null_sd = 0（样本内单类群 / 该样本 SES 退化）记为 NA，不参与检验"),
     stringsAsFactors = FALSE)
   sheets <- list(
@@ -305,7 +305,7 @@ md_phylo_diversity <- function(CFG) {
 # local21_ 辅助函数（共享库缺的，写在本文件内，不动 R/shared/）
 # -----------------------------------------------------------------------------
 
-#' NRI / NTI 面板：逐行照抄 11_shared.R §4.2 的 plot_nri_nti()（L1770-1825）。
+#' NRI / NTI 面板：逐行沿用同一套样式 的 plot_nri_nti（L1770-1825）。
 #'
 #' 为什么在本文件内重写而不是用基元 md_nri_nti_panel()：
 #' 该基元与原图有四处可见差异 ——
@@ -410,7 +410,7 @@ local21_phylo_prune <- function(tree, asv_ids, CFG = NULL) {
   tr
 }
 
-#' 以最长枝 tip 为外群做根化（nifH 13_Supp_NRI_NTI.R 的口径）
+#' 以最长枝 tip 为外群做根化（nifH 原实现口径）
 local21_root_outgroup <- function(tr) {
   tryCatch({
     te <- which(tr$edge[, 2] <= length(tr$tip.label))
@@ -472,7 +472,7 @@ local21_ses_mpd_mntd <- function(CFG, samp, coph, runs, ncores = 1L) {
     res$secs <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
     return(res)
   }
-  # ---- 手写回退：与 nifH 13_Supp_NRI_NTI.R 完全同构 ----
+  # ---- 手写回退：与 nifH 原脚本 完全同构 ----
   md_log(CFG, "INFO", "零模型回退：手写循环（taxa.labels，", runs, " 次）")
   obs_mpd  <- as.numeric(picante::mpd(samp, coph, abundance.weighted = TRUE))
   obs_mntd <- as.numeric(picante::mntd(samp, coph, abundance.weighted = TRUE))

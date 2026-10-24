@@ -129,7 +129,7 @@ md_response_linkage <- function(CFG) {
   ids_all <- as.character(d[[smp]])
 
   # ---- 分组因子（图例用；水平过多则不上色）----
-  # 上色因子照抄原脚本：10_Supp_env_SEM.R §FigS9 与 16_Supp_function_decoupling.R §FigS12
+  # 上色因子照抄原脚本 §附图 与 原脚本 §附图
   # 的散点一律 `colour = Vegetation` + `scale_colour_manual(values = cols_veg)`，
   # 即**第二个设计因子**（本包 design$factors = c("Zone","Vegetation")）。
   .fac_all <- CFG$design$factors %||% character(0)
@@ -426,7 +426,7 @@ md_response_linkage <- function(CFG) {
                                          ggplot2::aes(x = .data[[v1]], y = .data$.y),
                                          size = MD_PT_SIZE$point,
                                          alpha = MD_PT_SIZE$point_alpha, colour = "grey30")
-        # 曲线/置信带照抄 10_Supp_env_SEM.R §FigS9：fill = alpha(REG_LINE_COL, REG_RIBBON_A)
+        # 曲线/置信带沿用同一套样式 §附图：fill = alpha(REG_LINE_COL, REG_RIBBON_A)
         gA <- gA +
           ggplot2::geom_ribbon(data = f1$curve,
                                ggplot2::aes(x = .data$x_raw, ymin = .data$lower,
@@ -438,7 +438,7 @@ md_response_linkage <- function(CFG) {
                              colour = MD_REG$col, linewidth = MD_REG$lw)
         if (!is.null(gvar)) gA <- gA + ggplot2::scale_colour_manual(values = gcols, name = gvar)
         gA <- gA +
-          # 标注锚在面板**左上**内侧（同 FigS9 的 -Inf / hjust = -0.08 / vjust = 1.3）
+          # 标注锚在面板**左上**内侧（同 附图 的 -Inf / hjust = -0.08 / vjust = 1.3）
           ggplot2::annotate("text", x = -Inf, y = Inf, hjust = -0.08, vjust = 1.3,
                             size = pt2gg(pt$ann), colour = "grey25", lineheight = 0.9,
                             label = local_annot(v1, f1$edf, f1$p_lmm, f1$p_smooth, f1$src)) +
@@ -556,7 +556,7 @@ md_response_linkage <- function(CFG) {
                                            ggplot2::aes(x = .data[[ax1]], y = .data$.y),
                                            size = MD_PT_SIZE$point,
                                            alpha = MD_PT_SIZE$point_alpha, colour = "grey30")
-          # 曲线/置信带照抄 16_Supp_function_decoupling.R §FigS12A
+          # 曲线/置信带沿用同一套样式 §附图A
           gB <- gB +
             ggplot2::geom_ribbon(data = f1$curve,
                                  ggplot2::aes(x = .data$x_raw, ymin = .data$lower,
@@ -568,7 +568,7 @@ md_response_linkage <- function(CFG) {
                                colour = MD_REG$col, linewidth = MD_REG$lw)
           if (!is.null(gvar)) gB <- gB + ggplot2::scale_colour_manual(values = gcols, name = gvar)
           gB <- gB +
-            # 标注锚在面板**右上**内侧（同 FigS12A 的 Inf / hjust = 1 / vjust = 1.3）
+            # 标注锚在面板**右上**内侧（同 附图A 的 Inf / hjust = 1 / vjust = 1.3）
             ggplot2::annotate("text", x = Inf, y = Inf, hjust = 1, vjust = 1.3,
                               size = pt2gg(pt$ann), colour = "grey25", lineheight = 0.95,
                               label = local_annot(ax1, f1$edf, f1$p_lmm, f1$p_smooth, f1$src)) +
@@ -697,7 +697,7 @@ md_response_linkage <- function(CFG) {
 
   # ===========================================================================
   # 2b. procrustes ---- 群落排序 vs 响应+环境排序的 Procrustes 一致性
-  #     源：毕业论文 8_ARA_function.R:1173-1287（Fig8b-D）
+  #     参考实现
   #     ⚠ 只在 linkage 含 "procrustes" 时执行；默认配置下不产生任何变化。
   # ===========================================================================
   proc_res <- NULL; proc_sum <- NULL
@@ -776,7 +776,7 @@ md_response_linkage <- function(CFG) {
 
   # ===========================================================================
   # 2c. rf ---- 群落组成（PCoA 轴 + 门水平相对丰度）-> 响应变量的随机森林
-  #     源：毕业论文 8_ARA_function.R:1299-1360
+  #     参考实现
   #     预测变量 = PCoA1..k + 门（或 CFG$response_models$rf$rank）相对丰度；
   #     响应 = CFG$response$var。⚠ 只在 linkage 含 "rf" 时执行。
   # ===========================================================================
@@ -844,7 +844,7 @@ md_response_linkage <- function(CFG) {
   # ===========================================================================
   # 4. 拼图 + 出表
   # ===========================================================================
-  # ---- Procrustes 面板：残差按第一个设计因子的箱线（原脚本 Fig8b-D 的分组箱线口径）----
+  # ---- Procrustes 面板：残差按第一个设计因子的箱线（原图分组箱线口径）----
   if (!is.null(proc_res) && nrow(proc_res) > 0) {
     gf <- (CFG$design$factors %||% character(0))
     gf <- gf[gf %in% names(proc_res)]
@@ -872,7 +872,7 @@ md_response_linkage <- function(CFG) {
     }
   }
 
-  # ---- RF 面板：变量重要性（原脚本 Fig8b-D 的 RF 口径）----
+  # ---- RF 面板：变量重要性（原图 RF 口径）----
   if (!is.null(rf_fit) && !is.null(rf_fit$importance) && nrow(rf_fit$importance) > 0) {
     panels$D <- md_rf_importance_plot(
       rf_fit$importance,

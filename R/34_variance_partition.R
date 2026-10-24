@@ -1,7 +1,7 @@
 # =============================================================================
 # R/34_variance_partition.R ---- 变差分解（VPA / varpart）
 # -----------------------------------------------------------------------------
-# 口径来源（nifH 论文 03_Fig03_assembly.R §E，只读参考，不修改）：
+# 口径来源（原始研究 原脚本 §E，只读参考，不修改）：
 #   · vegan::varpart()，响应为 Hellinger 转换后的群落矩阵
 #   · 各块各自 scale()，三块：Geo / Soil / Climate
 #   · 偏 RDA 显著性：anova(rda(Y, X, Z), permutations = 999) + p.adjust(method = "holm")
@@ -20,7 +20,7 @@
 #       cache/34_vpa.rds
 #
 # 画法对齐（只改画法，不动任何统计量）：
-#   · 分块配色 = 03_Fig03_assembly.R §E 的 col_geo / col_sc / col_clim
+#   · 分块配色 = 原脚本 §E 的 col_geo / col_sc / col_clim
 #     （= #80B1D2 / #F6AAA1 / #C7CEEA；经 md_pal(name = "assembly") 取，模块里不写死颜色）
 #   · 分块名加粗写在坐标轴上（原脚本把分块名写在 Venn 里、用 bold）
 # 图内文字一律纯 ASCII（y 轴用 "Adjusted R2" / "Adjusted R2 (%)"，不用 plotmath 的 R^2）。
@@ -55,7 +55,7 @@ local_quiet_known <- function(expr) {
 #' ⚠ 交叠项的校正 R2 **可以为负**，这是可加性分解的正常现象（含义是「共享的那部分
 #'   解释力不优于随机期望」），不是错误、也不等于 0。故本表**不做任何截断**：
 #'   所有下游（图、表、缓存）一律使用原始 adj_r2。
-#'   （nifH 原脚本 03_Fig03_assembly.R 的 draw_venn3 里有一个 clamp <- pmax(x, 0)，
+#'   （原实现 draw_venn3 里有一个 clamp <- pmax(x, 0)，
 #'     会把负交叠画成 0.0%；本包不沿用该做法，见模块 34 的 Note sheet。）
 local_vpa_fractions <- function(vp, blocks) {
   if (is.null(vp) || is.null(vp$part$indfract)) return(NULL)
@@ -265,7 +265,7 @@ md_variance_partition <- function(CFG) {
   # B = 全部非残差分量的**有符号**条形图（含可为负的交叠项）
   #     ---- 不使用 Venn，理由见 local_partition_plot() 的函数注释。
   pt <- md_pt(CFG)
-  # 分块配色对齐 03_Fig03_assembly.R §E 的 col_geo / col_sc / col_clim
+  # 分块配色对齐 原脚本 §E 的 col_geo / col_sc / col_clim
   #   = #80B1D2 / #F6AAA1 / #C7CEEA（原脚本把分块名写在 Venn 里、用该块的色 + bold）。
   # 这三个 hex 在 R/shared/12_plot_theme.R 里只出现在 MD_BUILTIN_PAL$assembly，
   # 故经 md_pal(name = "assembly") 取用，不在模块里写死颜色（顺序 = CFG$env$vpa_blocks 的块序）。
@@ -299,7 +299,7 @@ md_variance_partition <- function(CFG) {
     ggplot2::theme(axis.text.x = ggplot2::element_text(size = pt$tick, face = "bold"),
                    plot.subtitle = ggplot2::element_text(size = pt$ann * 0.9, colour = "grey30"))
 
-  # B = 三圆 Venn —— **照抄原脚本 03_Fig03_assembly.R:288-329 的 draw_venn3()**。
+  # B = 三圆 Venn —— **照抄原实现 draw_venn3**。
   #   ⚠ 原脚本用 clamp() 把负的交叠项截为 0（图上显示 0.0%），本包沿用该口径；
   #     负值明细写在 Fractions 表与 Note 里，不丢信息。
   #   Venn 需要恰好 3 块；块数不是 3 时退回有符号条形图并记 Note。
@@ -351,7 +351,7 @@ md_variance_partition <- function(CFG) {
             n_neg),
     "★ 图 B 用「有符号条形图」而非 Venn 圆：Venn 叶瓣几何上只能表示正面积，无法忠实表达负交叠；",
     "   故本模块不采用 Venn（nifH 原脚本 draw_venn3 里的 clamp <- pmax(x, 0) 会把负交叠画成 0.0%，本包不沿用）。",
-    "⚠ 本数据集的群落变量总解释力极低（nifH 论文实测约 2%，示范数据同量级）----这是真实特征",
+    "⚠ 本数据集的群落变量总解释力极低（原始研究实测约 2%，示范数据同量级）----这是真实特征",
     "    （极端单例化、β 周转极高），不是计算错误；正文/表注应如实报告而非调参放大。"))
 
   tp <- md_write_xlsx(CFG, "34_variance_partition", list(

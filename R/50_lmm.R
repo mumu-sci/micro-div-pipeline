@@ -16,7 +16,7 @@
 #   4. 条件效应曲线：CFG$model$focus x CFG$model$covariates，全变量 z 化 ->
 #      CFG$model$grid_n 网格 -> 其余协变量置 z = 0 -> 预测 +/- 1.96SE -> 反变换回原始单位。
 #
-# **站点级共线守卫**（nifH Fig. 5B / FigS9 的教训）：
+# **站点级共线守卫**（nifH Fig. 5B / 附图 的教训）：
 #   焦点变量若在站点内唯一值 = 1（md_within_unique()），它就是站点级变量，与
 #   (1|Site) 随机截距共线 -> 自动剔除同为站点级的协变量、禁用平滑（此时 s(x) 的
 #   有效样本量 = 站点数，edf 不可识别），并在 Guard sheet 与图面注记里说明。
@@ -490,7 +490,7 @@ md_lmm <- function(CFG) {
       curve$focus <- f
       curve_rows[[length(curve_rows) + 1L]] <- curve
       curve_df[[f]] <- curve
-      # 原始单位散点（原脚本 Fig5 B-E：geom_point(x = 原始值, y = 原始响应)）
+      # 原始单位散点（原图 B-E：geom_point(x = 原始值, y = 原始响应)）
       pt_df[[f]] <- data.frame(.row = dd_raw$.row, x = dd_raw[[f]], y = dd_raw[[y_var]])
       names(pt_df[[f]])[2] <- f
       names(pt_df[[f]])[3] <- y_var
@@ -516,8 +516,8 @@ md_lmm <- function(CFG) {
   prov_tab  <- do.call(rbind, prov)
 
   # ---------------------------------------------------------------------------
-  # 3. 图：系数森林图（A，对 04_Fig04_SEM.R §C/D make_coef_panel）
-  #       + 条件效应曲线（B-E，对 05_Fig05_decoupling.R §B-E）
+  # 3. 图：系数森林图（A，对 原脚本 §C/D make_coef_panel）
+  #       + 条件效应曲线（B-E，对 原脚本 §B-E）
   # ---------------------------------------------------------------------------
   # 画法要点（逐条照抄原脚本）：
   #   A：误差棒（height 0.18）+ 实心白描边圆点 shape 21；颜色 = 方向×显著性
@@ -592,7 +592,7 @@ md_lmm <- function(CFG) {
     dpt <- pt_df[[f]]
     if (!is.null(dpt) && nrow(dpt)) {
       # 着色因子**优先用设计因子**（Vegetation / Zone）——图例显示的是**分组名**；
-      # 原稿 05_Fig05_decoupling.R §B–E 就是按 Vegetation 着色。
+      # 原稿 原脚本 §B–E 就是按 Vegetation 着色。
       # ⚠ res 里只放了 y / focus / covariates，设计因子要**按需再解析一次**（get_val），
       #   否则候选会被下面的过滤器全部滤掉，导致全图根本没有图例。
       # ⚠ res/local_resolve 只走 as.numeric()，**分类的设计因子会被解析成全 NA**，
@@ -798,7 +798,7 @@ md_lmm <- function(CFG) {
     }
   }
   if (length(p_list)) {
-    # A 全宽；B 起一行并列（对原脚本 Fig5 的 design "AAAA\nBCDE" 口径）。
+    # A 全宽；B 起一行并列（对原图 design "AAAA\nBCDE" 口径）。
     # patchwork 要求同一字母占的格子必须是矩形，故这行按面板数排布：
     #   n < 4  -> 该行就是 n 格宽的网格；n >= 4 -> 按 4 列网格换行（每格 1 个面板）。
     n_curve <- length(p_list)

@@ -1,6 +1,6 @@
 # =============================================================================
 # assets/make_demo_data.R
-# 从 nifH 论文源数据抽取示范子集：3 Zone x 4 Site x 3 Vegetation = 36 样本 x 300 ASV
+# 从 原始研究源数据抽取示范子集：3 Zone x 4 Site x 3 Vegetation = 36 样本 x 300 ASV
 # -----------------------------------------------------------------------------
 # 用途：本 skill 的示范/自检数据。**只读源数据，只写本包 data/ 目录。**
 #
@@ -29,12 +29,12 @@ suppressPackageStartupMessages({
 SEED      <- 123L
 ZONES     <- c("Coastal", "Nearshore", "Xisha")
 VEGS      <- c("Bare", "Herb", "Tree")
-N_REP     <- 4L          # 每 Zone x Vegetation 格抽几个样本
+N_REP     <- 4L          # 每 设计因子交互 格抽几个样本
 N_ASV     <- 300L        # ASV 数目标（实际由「每样本 top-k 并集」决定，见 [3a]）
 SOIL_VARS <- c("SWC", "NH4", "NO3", "pH", "OM", "TN", "TP", "EC", "TK", "Ca", "Fe")
 BIO_VARS  <- c("bio_1", "bio_12")   # 年均温 / 年降水
 
-SRC <- Sys.getenv("MD_SRC", "D:/01-Academic/06-nifH_BEF/data")
+SRC <- Sys.getenv("MD_SRC", "path/to/source/data")
 
 # 定位包根：优先命令行 --pkg=，其次脚本自身路径，最后工作目录
 arg_pkg <- grep("^--pkg=", commandArgs(TRUE), value = TRUE)
@@ -127,7 +127,7 @@ sub <- mat[, sel$sample_id, drop = FALSE]
 
 # ---- 4. 取 ASV：**每个样本丰度前 k 个 ASV 的并集** ----
 # 为什么不用"按平均相对丰度取前 300"（实测，详见 DECISIONS.md D-04）：
-#   这批 nifH 数据里 23,251/23,873 个 ASV 在全部 147 样本中只出现 1 次。
+#   这批 nifH 数据里 绝大多数 ASV 在全部 多样本中只出现 1 次。
 #   纯按平均丰度取前 300，抽到的基本是"单样本爆发型"ASV —— 300 个里 240 个只出现
 #   在 1 个样本中，还会出现 0 reads 样本、抽平深度只剩个位数，群落完全不可分析。
 #   改成"每样本 top-k 并集"后，每个样本都有自己的优势类群被保留，覆盖度与

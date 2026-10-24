@@ -5,11 +5,11 @@
 #
 # betaNTI（系统发育 beta 周转的标准化效应量）
 #   · 观察值：丰度加权 betaMNTD = picante::comdistnt(abundance.weighted = TRUE)
-#     （comdistnt 的加权口径与 nifH 09_Supp_assembly.R 的 MNTD 手写实现同构：
+#     （comdistnt 的加权口径与 nifH 原实现 MNTD 手写实现同构：
 #       对两样本各自取"到另一样本任一 OTU 的最小系统发育距离"，按各自相对丰度加权）
 #   · 零模型：taxa.labels -- 每次打乱 ASV 标签（picante::taxaShuffle 对 cophenetic
 #     距离矩阵行列施加同一置换）。本数据集每样本多为单例，"按 ASV 打乱标签"与
-#     nifH 的 randomizeMatrix(null.model = "independentswap") 在该数据上数值等价
+#     原实现 randomizeMatrix(null.model = "independentswap") 在该数据上数值等价
 #     （差异见 params$bnti_null_model 记录）。
 #   · betaNTI = (obs - null_mean) / null_sd，非有限值记 NA
 #
@@ -196,10 +196,10 @@ md_null_models <- function(CFG) {
 
   # ---- 4. 图：betaNTI + RCbray 直方图（标注锚在面板内）----
   # 画法逐项对照：
-  #   面板 A ← nifH 11_shared.R §4 :: plot_bnti_hist()（Fig3C 与 FigS5A 共用同一函数）
+  #   面板 A ← nifH 原脚本 :: plot_bnti_hist（原图 与 附图A 共用同一函数）
   #              bins = 60、填充 steelblue、阈值线 ±2 红色虚线、两侧过程名标注锚在面板内部
   #              （plot_bnti_hist 的标注色 #2166AC / #E31A1C 正是 md_hist() 的默认值）
-  #   面板 B ← nifH 09_Supp_assembly.R §5 的 RCbray 直方图（FigS5B）
+  #   面板 B ← nifH 原实现 RCbray 直方图（附图B）
   #              bins = 60、填充 steelblue、阈值线 ±0.95、标注色 #4DAF4A / #FF7F00
   # 用基元 md_hist()（13_plot_types.R）承载直方图/参考线/两侧标注；
   # md_hist() 没有暴露「阈值线颜色与线宽」「直方图透明度」这几个参数，
@@ -305,7 +305,7 @@ local30_thresholds <- function(CFG) {
 
 #' 直方图样式常量 —— **逐字照抄 nifH 原脚本**：
 #'   bins = 60、fill = "steelblue"、阈值线 "red" / linewidth 0.8、RCbray 标注色
-#'   #4DAF4A / #FF7F00 ← 11_shared.R::plot_bnti_hist() 与 09_Supp_assembly.R §5。
+#'   #4DAF4A / #FF7F00 ← 原脚本 与 原脚本。
 #' 这几个常量在原脚本里是内联字面量，12_plot_theme.R 没有对应键，
 #' 故在此统一登记（并允许 CFG$figure$style 覆盖），模块内别再散落字面量。
 local30_hist_style <- function(CFG) {
@@ -318,7 +318,7 @@ local30_hist_style <- function(CFG) {
        rc_right = s$rcbray_right_col %||% "#FF7F00")
 }
 
-#' 阈值线图层（照抄 09_Supp_assembly.R §5 的 geom_vline 那两行）
+#' 阈值线图层（沿用同一套样式 的 geom_vline 那两行）
 local30_thr_line <- function(xint, hsty) {
   ggplot2::geom_vline(xintercept = xint, linetype = "dashed",
                       colour = hsty$thr_col, linewidth = hsty$thr_lw)
@@ -356,7 +356,7 @@ local30_root_outgroup <- function(tr) {
   }, error = function(e) tr)
 }
 
-#' upper.tri 的线性下标（row / col），与 nifH 09_Supp_assembly.R 的
+#' upper.tri 的线性下标（row / col），与 nifH 原实现
 #' which(upper.tri(m), arr.ind = TRUE) 完全同序
 local30_pair_indices <- function(n) {
   if (n < 2L) return(data.frame(row = integer(0), col = integer(0)))

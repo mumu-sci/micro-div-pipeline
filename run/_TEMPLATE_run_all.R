@@ -5,14 +5,14 @@
 #   1) 复制本文件到 <论文项目>/run/run_all.R
 #   2) 改下面两处：PKG_DIR（本包位置）、CFG_FILE（配置文件名）
 #   3) cd 到 <论文项目> 然后：
-#        D:/R-4.5.2/bin/Rscript.exe --vanilla run/run_all.R
+#        Rscript --vanilla run/run_all.R
 #
 # 更简单的替代做法（不用本模板）：
-#   D:/R-4.5.2/bin/Rscript.exe --vanilla <PKG_DIR>/R/90_run_all.R \
+#   Rscript --vanilla <PKG_DIR>/R/90_run_all.R \
 #       --config=config/config.R --project=<论文项目绝对路径>
 # =============================================================================
 
-PKG_DIR  <- "D:/01-Academic/00-学术文件/analysis-packages/micro-div-pipeline"
+PKG_DIR  <- "path/to/micro-div-pipeline"
 CFG_FILE <- "config/config.R"        # 相对当前工作目录（= 论文项目根）
 
 # 可选：只跑部分模块 / 只重出图 / 强制重算
